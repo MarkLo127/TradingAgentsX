@@ -228,10 +228,10 @@ class TradingService:
                 price_stats = None
                 
                 try:
-                    price_df = PriceService.load_price_data(ticker, config.get("data_cache_dir"))
+                    price_df = PriceService.load_price_data(ticker, config.get("data_cache_dir")) # type: ignore
                     if price_df is not None:
                         # 將價格數據限制在分析日期前 1 年的範圍內
-                        import polars as pl_filter
+                        import polars as pl_filter # type: ignore
                         from datetime import datetime as dt_filter, timedelta as td_filter
                         
                         try:

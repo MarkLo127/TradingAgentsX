@@ -5,12 +5,12 @@ import asyncio
 import json
 from typing import Optional, List
 from uuid import UUID
-from fastapi import APIRouter, HTTPException, Depends, Header, Query
-from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete, func, text
-from sqlalchemy.orm import defer
+from fastapi import APIRouter, HTTPException, Depends, Header, Query # type: ignore
+from fastapi.responses import StreamingResponse # type: ignore
+from pydantic import BaseModel # type: ignore
+from sqlalchemy.ext.asyncio import AsyncSession # type: ignore
+from sqlalchemy import select, delete, func, text # type: ignore
+from sqlalchemy.orm import defer # type: ignore
 from datetime import datetime
 
 from backend.app.db import get_db, User, UserSettings, Report

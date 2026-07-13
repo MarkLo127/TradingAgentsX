@@ -1,10 +1,10 @@
 """
 Configuration management for TradingAgentsX Backend API
 """
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings # type: ignore
 from typing import Optional
 import os
-from pydantic import Field
+from pydantic import Field # type: ignore
 
 
 class Settings(BaseSettings):

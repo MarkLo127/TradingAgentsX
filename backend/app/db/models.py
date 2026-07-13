@@ -4,9 +4,9 @@ Database models for users, settings, and reports
 import uuid
 from datetime import datetime
 from typing import Optional
-from sqlalchemy import String, Text, DateTime, ForeignKey, JSON
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import String, Text, DateTime, ForeignKey, JSON # type: ignore
+from sqlalchemy.orm import Mapped, mapped_column, relationship # type: ignore
+from sqlalchemy.dialects.postgresql import UUID # type: ignore
 
 from .database import Base
 

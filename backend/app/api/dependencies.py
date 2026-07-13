@@ -3,7 +3,7 @@ Shared dependencies for API routes
 """
 import logging
 from typing import Optional, Dict, Any
-from fastapi import Depends, HTTPException, Header
+from fastapi import Depends, HTTPException, Header # type: ignore
 from backend.app.services.trading_service import TradingService, trading_service
 from backend.app.services.auth_utils import verify_access_token
 

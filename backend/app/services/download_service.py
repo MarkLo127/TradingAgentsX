@@ -47,11 +47,11 @@ class DownloadService:
         ticker: str,
         analysis_date: str,
         reports: List[Dict[str, str]],
-        price_data: list = None,
-        price_stats: dict = None,
+        price_data: list = None, # type: ignore
+        price_stats: dict = None, # type: ignore
         language: str = "zh-TW",
-        deep_think_llm: str = None,
-        quick_think_llm: str = None,
+        deep_think_llm: str = None, # type: ignore
+        quick_think_llm: str = None, # type: ignore
     ) -> tuple[bytes, str]:
         """
         Create a single combined PDF containing all analyst reports

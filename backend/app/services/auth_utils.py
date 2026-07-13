@@ -2,11 +2,11 @@
 Authentication utilities - JWT and encryption
 """
 import os
-import jwt
+import jwt # type: ignore
 import hashlib
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet # type: ignore
 import base64
 
 # JWT Configuration

@@ -39,7 +39,7 @@ def get_redis_client():
         return None
     
     try:
-        import redis
+        import redis # type: ignore
         _redis_client = redis.from_url(
             REDIS_URL,
             decode_responses=True,

@@ -6,7 +6,7 @@ Options:
   --port PORT                Server port (default: 8000)
   --host HOST                Server host (default: 0.0.0.0)
 """
-import uvicorn
+import uvicorn # type: ignore
 import os
 import sys
 import argparse

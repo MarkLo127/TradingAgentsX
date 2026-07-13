@@ -4,7 +4,7 @@ Uses the user's LLM API key to call an OpenAI-compatible endpoint.
 """
 import logging
 from typing import Dict, Any, List, Optional
-from openai import AsyncOpenAI
+from openai import AsyncOpenAI # type: ignore
 
 logger = logging.getLogger(__name__)
 

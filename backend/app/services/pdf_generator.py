@@ -19,12 +19,12 @@ import logging
 logging.getLogger('matplotlib.font_manager').setLevel(logging.ERROR)
 
 # Matplotlib for chart generation
-import matplotlib
+import matplotlib # type: ignore
 matplotlib.use('Agg')  # Use non-interactive backend for server
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-from matplotlib.patches import Rectangle
-import numpy as np
+import matplotlib.pyplot as plt # type: ignore
+import matplotlib.dates as mdates # type: ignore
+from matplotlib.patches import Rectangle # type: ignore
+import numpy as np # type: ignore
 
 # Configure matplotlib to use available system fonts
 plt.rcParams['font.family'] = 'sans-serif'
@@ -32,7 +32,7 @@ plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Liberation Sans', 'FreeSans',
 plt.rcParams['axes.unicode_minus'] = False
 
 # fpdf2 for PDF generation — reliable cross-platform Unicode/CJK support
-from fpdf import FPDF
+from fpdf import FPDF # type: ignore
 
 # ============================================
 # PDF LABELS FOR INTERNATIONALIZATION
@@ -450,7 +450,7 @@ class PDFGenerator:
         pdf.set_text_color(51, 51, 51)
 
         try:
-            from fpdf.table import FontFace
+            from fpdf.table import FontFace # type: ignore
 
             headings_style = FontFace(
                 emphasis="B",            # bold via emphasis flag
@@ -459,14 +459,14 @@ class PDFGenerator:
             )
 
             with pdf.table(
-                width=pdf.epw,
+                width=pdf.epw, # type: ignore
                 col_widths=tuple([1] * num_cols),  # equal proportional widths
                 line_height=5,
                 borders_layout="ALL",
                 first_row_as_headings=True,
                 headings_style=headings_style,
                 text_align="LEFT",
-                wrapmode="CHAR",  # character-level wrap — required for CJK text
+                wrapmode="CHAR",  # character-level wrap — required for CJK text # type: ignore
             ) as table:
                 for row_data in table_data:
                     row_data_padded = (list(row_data) + [''] * num_cols)[:num_cols]
@@ -560,7 +560,7 @@ class PDFGenerator:
             orig_left = pdf.l_margin
             pdf.set_left_margin(orig_left + BULLET_INDENT)
             pdf.set_x(orig_left + BULLET_INDENT)
-            pdf.multi_cell(pdf.epw, 5.5, '\u2022 ' + content, align='L', wrapmode='CHAR')
+            pdf.multi_cell(pdf.epw, 5.5, '\u2022 ' + content, align='L', wrapmode='CHAR') # type: ignore
             pdf.set_left_margin(orig_left)
             pdf.set_x(orig_left)
         else:
@@ -583,18 +583,18 @@ class PDFGenerator:
                 pdf.set_font(fn, size=10)
                 pdf.set_left_margin(orig_left + NUM_INDENT)
                 pdf.set_x(orig_left + NUM_INDENT)
-                pdf.multi_cell(pdf.epw, 5.5, content, align='L', wrapmode='CHAR')
+                pdf.multi_cell(pdf.epw, 5.5, content, align='L', wrapmode='CHAR') # type: ignore
                 pdf.set_left_margin(orig_left)
                 pdf.set_x(orig_left)
             elif is_section_title:
                 pdf.set_font(fn, 'B', size=12)
                 self._set_color(pdf, '#2c3e50')
-                pdf.multi_cell(w, 6, content, align='L', wrapmode='CHAR')
+                pdf.multi_cell(w, 6, content, align='L', wrapmode='CHAR') # type: ignore
                 pdf.ln(1)
                 self._set_color(pdf, '#333333')
             else:
                 pdf.set_font(fn, size=10)
-                pdf.multi_cell(w, 5.5, content, align='L', wrapmode='CHAR')
+                pdf.multi_cell(w, 5.5, content, align='L', wrapmode='CHAR') # type: ignore
 
     # ------------------------------------------------------------------
     # Price chart (unchanged from original)
@@ -629,7 +629,7 @@ class PDFGenerator:
     def _generate_price_chart(self, price_data: List[Dict], ticker: str) -> bytes:
         """Generate Heikin Ashi candlestick + volume chart as PNG bytes"""
         if not price_data or len(price_data) < 2:
-            return None
+            return None # type: ignore
         ha_data = self._calculate_heikin_ashi(price_data)
         dates = list(range(len(ha_data)))
         ha_opens = [d['HA_Open'] for d in ha_data]
@@ -641,7 +641,7 @@ class PDFGenerator:
         fig, (ax1, ax2) = plt.subplots(
             2, 1, figsize=(10, 6),
             gridspec_kw={'height_ratios': [3, 1]}, sharex=True)
-        fig.patch.set_facecolor('white')
+        fig.patch.set_facecolor('white') # type: ignore
 
         width = 0.8
         for i in range(len(dates)):
@@ -666,7 +666,7 @@ class PDFGenerator:
         ax2.set_xlabel('Trading Days', fontsize=10)
         ax2.grid(True, alpha=0.3)
         ax2.set_facecolor('#fafafa')
-        ax2.yaxis.set_major_formatter(plt.FuncFormatter(
+        ax2.yaxis.set_major_formatter(plt.FuncFormatter( # type: ignore
             lambda x, p: f'{x/1e6:.1f}M' if x >= 1e6 else f'{x/1e3:.0f}K' if x >= 1e3 else f'{x:.0f}'))
 
         if ha_data:
@@ -695,7 +695,7 @@ class PDFGenerator:
     # ------------------------------------------------------------------
 
     def _build_cover_page(self, pdf: FPDF, ticker: str, analysis_date: str, language: str,
-                          deep_think_llm: str = None, quick_think_llm: str = None):
+                          deep_think_llm: str = None, quick_think_llm: str = None): # type: ignore
         """Cover page: large ticker, date, TradingAgentsX branding"""
         fn = self._fn()
         pdf.add_page()
@@ -743,7 +743,7 @@ class PDFGenerator:
                     model_line = f'Model: {deep_name}'
                 else:
                     model_line = f'Model: {quick_name}'
-            pdf.multi_cell(0, 6, model_line, align='C', wrapmode='CHAR')
+            pdf.multi_cell(0, 6, model_line, align='C', wrapmode='CHAR') # type: ignore
 
         pdf.set_text_color(0, 0, 0)
 
@@ -952,11 +952,11 @@ class PDFGenerator:
         ticker: str,
         analysis_date: str,
         reports: list,
-        price_data: list = None,
-        price_stats: dict = None,
+        price_data: list = None, # type: ignore
+        price_stats: dict = None, # type: ignore
         language: str = 'zh-TW',
-        deep_think_llm: str = None,
-        quick_think_llm: str = None,
+        deep_think_llm: str = None, # type: ignore
+        quick_think_llm: str = None, # type: ignore
     ) -> bytes:
         """
         Generate a combined PDF containing all analyst reports.
@@ -1056,8 +1056,8 @@ class PDFGenerator:
         ticker: str,
         analysis_date: str,
         report_content: str,
-        price_data: list = None,
-        price_stats: dict = None,
+        price_data: list = None, # type: ignore
+        price_stats: dict = None, # type: ignore
     ) -> bytes:
         """
         Generate a single-analyst PDF report.

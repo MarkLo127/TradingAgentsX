@@ -3,16 +3,18 @@ Google OAuth authentication routes
 """
 import os
 import logging
-import httpx
+import httpx # type: ignore
 from datetime import datetime
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Depends, Query
-from fastapi.responses import RedirectResponse
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from fastapi import APIRouter, HTTPException, Depends, Query # type: ignore
+from fastapi.responses import RedirectResponse # type: ignore
+from sqlalchemy.ext.asyncio import AsyncSession # type: ignore
+from sqlalchemy import select # type: ignore
 
 from backend.app.db import get_db, User, UserSettings
 from backend.app.services.auth_utils import create_access_token
+
+from pydantic import BaseModel # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -162,8 +164,6 @@ async def google_callback(
     # Redirect to frontend with token
     redirect_url = f"{frontend_url}/auth/callback?token={jwt_token}"
     return RedirectResponse(url=redirect_url)
-
-from pydantic import BaseModel
 
 class TokenExchangeRequest(BaseModel):
     code: str

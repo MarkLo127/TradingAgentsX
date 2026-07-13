@@ -1,5 +1,5 @@
 import asyncio
-import httpx
+import httpx # type: ignore
 import json
 
 async def test():

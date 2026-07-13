@@ -1,7 +1,7 @@
 """
 API route definitions for TradingAgentsX Backend
 """
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException # type: ignore
 from datetime import datetime
 import logging
 import threading
@@ -99,7 +99,7 @@ async def run_analysis(
     )
     
     if not has_api_key:
-        from fastapi import HTTPException
+        from fastapi import HTTPException # type: ignore
         raise HTTPException(
             status_code=400,
             detail="API Key required. Please provide your own LLM API key (OpenAI, Anthropic, etc.) to use the analysis service.",
@@ -119,7 +119,7 @@ async def run_analysis(
         })
     except Exception as e:
         logger.error(f"Failed to create analysis task: {type(e).__name__}: {str(e)}", exc_info=True)
-        raise HTTPException(
+        raise HTTPException( # type: ignore
             status_code=503,
             detail=f"Task creation failed ({type(e).__name__}). The task service may be temporarily unavailable. Please try again."
         )
@@ -140,17 +140,17 @@ async def run_analysis(
                 ticker=request.ticker,
                 analysis_date=request.analysis_date,
                 analysts=request.analysts,
-                research_depth=request.research_depth,
+                research_depth=request.research_depth, # type: ignore
                 market_type=request.market_type or "us",  # 預設美股
-                deep_think_llm=request.deep_think_llm,
-                quick_think_llm=request.quick_think_llm,
+                deep_think_llm=request.deep_think_llm, # type: ignore
+                quick_think_llm=request.quick_think_llm, # type: ignore
                 openai_api_key=request.openai_api_key or "",  # Pass empty string if None, service handles it
-                openai_base_url=request.openai_base_url,
-                quick_think_base_url=request.quick_think_base_url,
-                deep_think_base_url=request.deep_think_base_url,
+                openai_base_url=request.openai_base_url, # type: ignore
+                quick_think_base_url=request.quick_think_base_url, # type: ignore
+                deep_think_base_url=request.deep_think_base_url, # type: ignore
                 quick_think_api_key=request.quick_think_api_key or "",
                 deep_think_api_key=request.deep_think_api_key or "",
-                embedding_base_url=request.embedding_base_url,
+                embedding_base_url=request.embedding_base_url, # type: ignore
                 embedding_api_key=request.embedding_api_key or "",
                 embedding_model=request.embedding_model or "all-MiniLM-L6-v2",
                 alpha_vantage_api_key=request.alpha_vantage_api_key or "",
@@ -289,7 +289,7 @@ async def download_reports(request: DownloadRequest):
     Returns:
         Single combined PDF file (e.g., AVGO_Combined_Report_2025-12-16.pdf)
     """
-    from fastapi.responses import Response
+    from fastapi.responses import Response # type: ignore
     from backend.app.services.download_service import download_service
     
     # Determine data source: task-based or direct mode
@@ -359,7 +359,7 @@ async def download_reports(request: DownloadRequest):
         keys = path.split('.')
         for key in keys:
             if isinstance(obj, dict):
-                obj = obj.get(key)
+                obj = obj.get(key) # type: ignore
             else:
                 return None
         return obj
@@ -387,11 +387,11 @@ async def download_reports(request: DownloadRequest):
         ticker=request.ticker,
         analysis_date=request.analysis_date,
         reports=reports_to_download,
-        price_data=price_data,
-        price_stats=price_stats,
+        price_data=price_data, # type: ignore
+        price_stats=price_stats, # type: ignore
         language=request.language or "zh-TW",
-        deep_think_llm=request.deep_think_llm,
-        quick_think_llm=request.quick_think_llm,
+        deep_think_llm=request.deep_think_llm, # type: ignore
+        quick_think_llm=request.quick_think_llm, # type: ignore
     )
 
     return Response(
@@ -411,7 +411,7 @@ async def generate_pdf_temp(request: DownloadRequest):
     which fixes Safari's inability to render PDF blob URLs inside iframes.
     Auto-expires after 10 minutes.
     """
-    from fastapi.responses import Response
+    from fastapi.responses import Response # type: ignore
     from backend.app.services.download_service import download_service
 
     if request.task_id:
@@ -470,7 +470,7 @@ async def generate_pdf_temp(request: DownloadRequest):
         keys = path.split('.')
         for key in keys:
             if isinstance(obj, dict):
-                obj = obj.get(key)
+                obj = obj.get(key) # type: ignore
             else:
                 return None
         return obj
@@ -494,11 +494,11 @@ async def generate_pdf_temp(request: DownloadRequest):
         ticker=request.ticker,
         analysis_date=request.analysis_date,
         reports=reports_to_download,
-        price_data=price_data,
-        price_stats=price_stats,
+        price_data=price_data, # type: ignore
+        price_stats=price_stats, # type: ignore
         language=language,
-        deep_think_llm=request.deep_think_llm,
-        quick_think_llm=request.quick_think_llm,
+        deep_think_llm=request.deep_think_llm, # type: ignore
+        quick_think_llm=request.quick_think_llm, # type: ignore
     )
 
     temp_id = str(uuid.uuid4())
@@ -521,7 +521,7 @@ async def serve_pdf_temp(temp_id: str, download: bool = False):
     - ?download=true: browser downloads as file — for the Download button
     Cache entry is removed after a successful download request.
     """
-    from fastapi.responses import Response
+    from fastapi.responses import Response # type: ignore
 
     entry = _pdf_cache.get(temp_id)
     if not entry:

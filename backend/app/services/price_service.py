@@ -1,8 +1,8 @@
 """
 Price data service for loading and processing stock price data
 """
-import polars as pl
-import pandas as pd
+import polars as pl # type: ignore
+import pandas as pd # type: ignore
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 import logging
@@ -95,7 +95,7 @@ class PriceService:
         Returns:
             DataFrame with price data or None if failed
         """
-        import yfinance as yf
+        import yfinance as yf # type: ignore
         from datetime import datetime, timedelta
         import time as time_module
         
@@ -247,7 +247,7 @@ class PriceService:
             Dictionary with statistics
         """
         if df is None or df.is_empty():
-            return None
+            return None # type: ignore
 
         # Use Adj Close if available, otherwise use Close
         close_field = "Adj Close" if "Adj Close" in df.columns else "Close"

@@ -2,9 +2,9 @@
 Database configuration and connection management
 """
 import os
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import text
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker # type: ignore
+from sqlalchemy.orm import DeclarativeBase # type: ignore
+from sqlalchemy import text # type: ignore
 
 # Get database URL from environment
 DATABASE_URL = os.getenv("DATABASE_URL", "")

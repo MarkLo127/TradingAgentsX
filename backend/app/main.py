@@ -1,9 +1,9 @@
 """
 FastAPI application entry point for TradingAgentsX Backend
 """
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware
+from fastapi import FastAPI, Request # type: ignore
+from fastapi.responses import JSONResponse # type: ignore
+from starlette.middleware.base import BaseHTTPMiddleware # type: ignore
 import logging
 import sys
 import time
@@ -166,7 +166,7 @@ async def startup_event():
 @app.get("/")
 async def root():
     """Root endpoint - redirect to API documentation"""
-    from fastapi.responses import RedirectResponse
+    from fastapi.responses import RedirectResponse # type: ignore
     return RedirectResponse(url="/docs")
 
 
@@ -215,7 +215,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 
 if __name__ == "__main__":
-    import uvicorn
+    import uvicorn # type: ignore
     
     uvicorn.run(
         "app.main:app",
