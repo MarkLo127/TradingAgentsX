@@ -1,7 +1,7 @@
 """
 Pydantic models for request/response schemas
 """
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator # type: ignore
 from typing import List, Optional, Dict, Any, Literal, Union
 from datetime import date
 
