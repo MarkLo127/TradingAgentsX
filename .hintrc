@@ -16,6 +16,16 @@
       {
         "listitem": "off"
       }
+    ],
+    "meta-viewport": "off",
+    "css-prefix-order": "off",
+    "compat-api/css": [
+      "default",
+      {
+        "ignore": [
+          "user-select"
+        ]
+      }
     ]
   }
 }
