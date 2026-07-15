@@ -138,7 +138,7 @@ class PriceService:
                     timeout=30
                 )
                 
-                if data.empty:
+                if data.empty: # type: ignore
                     # 如果是台股，嘗試另一個後綴
                     if ".TW" in yf_ticker:
                         alt_ticker = yf_ticker.replace(".TW", ".TWO")
@@ -152,7 +152,7 @@ class PriceService:
                             auto_adjust=False,
                             timeout=30
                         )
-                        if not data.empty:
+                        if not data.empty: # type: ignore
                             yf_ticker = alt_ticker
                     elif ".TWO" in yf_ticker:
                         alt_ticker = yf_ticker.replace(".TWO", ".TW")
@@ -166,22 +166,22 @@ class PriceService:
                             auto_adjust=False,
                             timeout=30
                         )
-                        if not data.empty:
+                        if not data.empty: # type: ignore
                             yf_ticker = alt_ticker
                     
-                    if data.empty:
+                    if data.empty: # type: ignore
                         logger.error(f"{yf_ticker} 無可用數據")
                         return None
                 
                 # 處理 yfinance 多索引 DataFrame
                 # yfinance 可能返回多層索引的 DataFrame
-                if isinstance(data.columns, pd.MultiIndex):
+                if isinstance(data.columns, pd.MultiIndex): # type: ignore
                     # 移除多層索引，只保留第一層
-                    data.columns = data.columns.get_level_values(0)
+                    data.columns = data.columns.get_level_values(0) # type: ignore
                     logger.info("已處理 yfinance 多索引 DataFrame")
                 
                 # Reset index to make Date a column
-                data = data.reset_index()
+                data = data.reset_index() # type: ignore
                 
                 # 確保 Date 欄位名稱正確
                 if 'Date' not in data.columns and 'date' in data.columns:

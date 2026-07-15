@@ -186,7 +186,7 @@ async def chat_with_reports(
         
         response = await client.chat.completions.create(
             model=model,
-            messages=messages,
+            messages=messages, # type: ignore
             temperature=0.3,
             max_tokens=8192,
         )

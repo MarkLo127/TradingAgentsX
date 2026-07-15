@@ -444,7 +444,7 @@ async def cleanup_duplicate_reports(
         )
     """), {"user_id": str(user.id)})
 
-    deleted_count = result.rowcount
+    deleted_count = result.rowcount # type: ignore
     await db.commit()
     if deleted_count > 0:
         _notify_user(str(user.id))

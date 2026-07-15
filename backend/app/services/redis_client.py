@@ -112,7 +112,7 @@ def get_task_from_redis(task_id: str) -> Optional[dict]:
         key = f"task:{task_id}"
         data = client.get(key)
         if data:
-            return json.loads(data)
+            return json.loads(data) # type: ignore
         return None
     except Exception as e:
         logger.error(f"Failed to get task from Redis: {e}")
@@ -189,7 +189,7 @@ def check_rate_limit(key: str, max_requests: int, window_seconds: int) -> tuple[
             client.setex(rate_key, window_seconds, 1)
             return True, max_requests - 1
         
-        count = int(current)
+        count = int(current) # type: ignore
         if count >= max_requests:
             return False, 0
         
@@ -245,7 +245,7 @@ def cache_get(key: str) -> Optional[Any]:
         cache_key = f"cache:{key}"
         data = client.get(cache_key)
         if data:
-            return json.loads(data)
+            return json.loads(data) # type: ignore
         return None
     except Exception as e:
         logger.error(f"Failed to get cache: {e}")
