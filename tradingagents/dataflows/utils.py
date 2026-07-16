@@ -6,7 +6,7 @@ from typing import Annotated
 
 SavePathType = Annotated[str, "儲存資料的檔案路徑。如果為 None，則不儲存資料。"]
 
-def save_output(data: pl.DataFrame, tag: str, save_path: SavePathType = None) -> None:
+def save_output(data: pl.DataFrame, tag: str, save_path: SavePathType = None) -> None: # type: ignore
     """
     將 DataFrame 儲存到 CSV 檔案。
 

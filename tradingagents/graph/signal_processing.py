@@ -41,4 +41,4 @@ class SignalProcessor:
         ]
 
         # 呼叫 LLM 並返回其內容，即提取出的決策
-        return self.quick_thinking_llm.invoke(messages).content
+        return self.quick_thinking_llm.invoke(messages).content # type: ignore

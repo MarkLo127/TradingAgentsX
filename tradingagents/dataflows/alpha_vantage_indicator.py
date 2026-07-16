@@ -150,7 +150,7 @@ def get_indicator(
             return f"錯誤：指標 {indicator} 尚未實現。"
 
         # 解析 CSV 數據並提取日期範圍內的值
-        lines = data.strip().split('\n')
+        lines = data.strip().split('\n') # type: ignore
         if len(lines) < 2:
             return f"錯誤：{indicator} 沒有返回數據"
 

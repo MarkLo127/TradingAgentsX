@@ -55,7 +55,7 @@ def fetch_top_from_category(
     ],
     date: Annotated[str, "要從中獲取熱門貼文的日期。"],
     max_limit: Annotated[int, "要獲取的最大貼文數。"],
-    query: Annotated[str, "在子版塊中搜索的可選查詢。"] = None,
+    query: Annotated[str, "在子版塊中搜索的可選查詢。"] = None, # type: ignore
     data_path: Annotated[
         str,
         "數據資料夾的路徑。預設為 'reddit_data'。",

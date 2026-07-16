@@ -36,7 +36,7 @@ class ConditionalLogic:
         """
         messages = state["messages"]
         last_message = messages[-1]
-        if last_message.tool_calls:
+        if last_message.tool_calls: # type: ignore
             return "tools_market"
         return "Msg Clear Market"
 
@@ -53,7 +53,7 @@ class ConditionalLogic:
         """
         messages = state["messages"]
         last_message = messages[-1]
-        if last_message.tool_calls:
+        if last_message.tool_calls: # type: ignore
             return "tools_social"
         return "Msg Clear Social"
 
@@ -70,7 +70,7 @@ class ConditionalLogic:
         """
         messages = state["messages"]
         last_message = messages[-1]
-        if last_message.tool_calls:
+        if last_message.tool_calls: # type: ignore
             return "tools_news"
         return "Msg Clear News"
 
@@ -87,7 +87,7 @@ class ConditionalLogic:
         """
         messages = state["messages"]
         last_message = messages[-1]
-        if last_message.tool_calls:
+        if last_message.tool_calls: # type: ignore
             return "tools_fundamentals"
         return "Msg Clear Fundamentals"
 

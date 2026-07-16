@@ -160,12 +160,12 @@ class FinancialSituationMemory:
         )
 
         matched_results = []
-        for i in range(len(results["documents"][0])):
+        for i in range(len(results["documents"][0])): # type: ignore
             matched_results.append(
                 {
-                    "matched_situation": results["documents"][0][i],
-                    "recommendation": results["metadatas"][0][i]["recommendation"],
-                    "similarity_score": 1 - results["distances"][0][i],
+                    "matched_situation": results["documents"][0][i], # type: ignore
+                    "recommendation": results["metadatas"][0][i]["recommendation"], # type: ignore
+                    "similarity_score": 1 - results["distances"][0][i], # type: ignore
                 }
             )
 
@@ -280,7 +280,7 @@ class HybridFinancialMemory(FinancialSituationMemory):
         vector_ranking: List[tuple] = []
         for doc_id, dist in zip(
             vector_raw.get("ids", [[]])[0],
-            vector_raw.get("distances", [[]])[0],
+            vector_raw.get("distances", [[]])[0], # type: ignore
         ):
             try:
                 vector_ranking.append((int(doc_id), 1.0 - dist))

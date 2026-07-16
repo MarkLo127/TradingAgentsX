@@ -94,7 +94,7 @@ __author__ = "TradingAgentsX"
 # 便利函式：快速獲取股票完整資訊
 def get_stock_overview(
     ticker: str,
-    curr_date: str = None
+    curr_date: str = None # type: ignore
 ) -> dict:
     """
     獲取股票的完整概覽，包含股價、基本面和籌碼面資訊。

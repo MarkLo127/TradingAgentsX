@@ -43,7 +43,7 @@ def _convert_to_serializable(obj):
         return {k: _convert_to_serializable(v) for k, v in obj.items()}
     elif isinstance(obj, list):
         return [_convert_to_serializable(item) for item in obj]
-    elif isinstance(obj, (np.integer, np.int64)):
+    elif isinstance(obj, (np.integer, np.int64)): # type: ignore
         return int(obj)
     elif isinstance(obj, (np.floating, np.float64)):
         return float(obj)
@@ -72,7 +72,7 @@ def _format_output(data: dict, use_toon: bool = True) -> str:
     if use_toon:
         try:
             from tradingagents.utils.toon_converter import convert_json_to_toon
-            return convert_json_to_toon(serializable_data)
+            return convert_json_to_toon(serializable_data) # type: ignore
         except Exception as e:
             print(f"警告：toon 轉換失敗：{e}，使用 JSON 格式")
             return json.dumps(serializable_data, ensure_ascii=False, indent=2)

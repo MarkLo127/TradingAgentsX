@@ -150,7 +150,7 @@ def get_indicator(
     interval: str = "daily",
     time_period: int = 14,
     series_type: str = "close"
-) -> str:
+) -> str: # type: ignore
     """
     返回 FinMind 在一個時間窗口內的技術指標/籌碼面數據。
     

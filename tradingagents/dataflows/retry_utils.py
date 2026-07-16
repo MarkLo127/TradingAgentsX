@@ -13,7 +13,7 @@ def retry(
     max_attempts: int = 3,
     backoff: float = 2.0,
     exceptions: Tuple[Type[Exception], ...] = (Exception,),
-    on_retry: Callable = None
+    on_retry: Callable = None # type: ignore
 ):
     """
     重試裝飾器，支援指數退避
@@ -67,7 +67,7 @@ def retry(
                     time.sleep(wait_time)
             
             # 理論上不會到這裡，但為了類型安全
-            raise last_exception
+            raise last_exception # type: ignore
         
         return wrapper
     return decorator

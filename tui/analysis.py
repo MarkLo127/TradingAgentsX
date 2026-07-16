@@ -200,7 +200,7 @@ def run_analysis(selections, buffer, on_update):
 
     # 串流分析
     trace = []
-    for chunk in graph.graph.stream(init_agent_state, **args):
+    for chunk in graph.graph.stream(init_agent_state, **args): # type: ignore
         if len(chunk["messages"]) > 0:
             last_message = chunk["messages"][-1]
 

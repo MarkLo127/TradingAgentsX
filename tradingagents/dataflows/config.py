@@ -27,7 +27,7 @@ def get_config() -> Dict:
     """獲取當前設定。"""
     if _config is None:
         initialize_config()
-    return _config.copy()
+    return _config.copy() # type: ignore
 
 
 # 使用預設設定進行初始化

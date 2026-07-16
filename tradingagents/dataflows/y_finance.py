@@ -47,27 +47,27 @@ def get_YFin_data_online(
         raise Exception(f"從 Yahoo Finance 獲取 {symbol} 數據失敗: {e}")
 
     # 檢查數據是否為空
-    if data.empty:
+    if data.empty: # type: ignore
         return (
             f"找不到 '{symbol}' 在 {start_date} 和 {end_date} 之間的數據"
         )
 
     # 從索引中移除時區資訊以獲得更清晰的輸出
-    if data.index.tz is not None:
-        data.index = data.index.tz_localize(None)
+    if data.index.tz is not None: # type: ignore
+        data.index = data.index.tz_localize(None) # type: ignore
 
     # 將數值四捨五入到小數點後兩位以便更清晰地顯示
     numeric_columns = ["Open", "High", "Low", "Close", "Adj Close"]
     for col in numeric_columns:
-        if col in data.columns:
-            data[col] = data[col].round(2)
+        if col in data.columns: # type: ignore
+            data[col] = data[col].round(2) # type: ignore
 
     # 將 DataFrame 轉換為 CSV 字串
-    csv_string = data.to_csv()
+    csv_string = data.to_csv() # type: ignore
 
     # 新增標頭資訊
     header = f"# {symbol.upper()} 從 {start_date} 到 {end_date} 的股票數據\n"
-    header += f"# 總記錄數：{len(data)}\n"
+    header += f"# 總記錄數：{len(data)}\n" # type: ignore
     header += f"# 數據檢索時間：{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
 
     return header + csv_string
@@ -384,7 +384,7 @@ def get_stockstats_indicator(
 def get_balance_sheet(
     ticker: Annotated[str, "公司的股票代碼"],
     freq: Annotated[str, "數據頻率：'annual' 或 'quarterly'"] = "quarterly",
-    curr_date: Annotated[str, "當前日期 (yfinance 未使用)"] = None
+    curr_date: Annotated[str, "當前日期 (yfinance 未使用)"] = None # type: ignore
 ):
     """從 yfinance 獲取資產負債表數據。"""
     try:
@@ -414,7 +414,7 @@ def get_balance_sheet(
 def get_cashflow(
     ticker: Annotated[str, "公司的股票代碼"],
     freq: Annotated[str, "數據頻率：'annual' 或 'quarterly'"] = "quarterly",
-    curr_date: Annotated[str, "當前日期 (yfinance 未使用)"] = None
+    curr_date: Annotated[str, "當前日期 (yfinance 未使用)"] = None # type: ignore
 ):
     """從 yfinance 獲取現金流量數據。"""
     try:
@@ -444,7 +444,7 @@ def get_cashflow(
 def get_income_statement(
     ticker: Annotated[str, "公司的股票代碼"],
     freq: Annotated[str, "數據頻率：'annual' 或 'quarterly'"] = "quarterly",
-    curr_date: Annotated[str, "當前日期 (yfinance 未使用)"] = None
+    curr_date: Annotated[str, "當前日期 (yfinance 未使用)"] = None # type: ignore
 ):
     """從 yfinance 獲取損益表數據。"""
     try:
@@ -473,7 +473,7 @@ def get_income_statement(
 
 def get_fundamentals(
     ticker: Annotated[str, "公司的股票代碼"],
-    curr_date: Annotated[str, "當前日期 (yfinance 未使用)"] = None
+    curr_date: Annotated[str, "當前日期 (yfinance 未使用)"] = None # type: ignore
 ):
     """從 yfinance 獲取公司基本面數據。"""
     try:

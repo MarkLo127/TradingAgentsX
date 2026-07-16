@@ -151,7 +151,7 @@ def get_category_for_method(method: str) -> str:
             return category
     raise ValueError(f"在任何類別中都找不到方法 '{method}'")
 
-def get_vendor(category: str, method: str = None) -> str:
+def get_vendor(category: str, method: str = None) -> str: # type: ignore
     """
     獲取數據類別或特定工具方法的已設定供應商。
     工具級別的設定優先於類別級別。

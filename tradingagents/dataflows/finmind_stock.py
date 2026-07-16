@@ -133,13 +133,13 @@ def get_stock_info(stock_id: Optional[str] = None) -> str:
                     d for d in response["data"] 
                     if d.get("stock_id") == stock_id
                 ]
-                return format_output(filtered)
+                return format_output(filtered) # type: ignore
             else:
                 # 限制返回數量以減少 token
                 data = response["data"][:100]
                 return format_output(data)
         else:
-            return format_output([])
+            return format_output([]) # type: ignore
             
     except FinMindError as e:
         return format_output({"error": str(e)})

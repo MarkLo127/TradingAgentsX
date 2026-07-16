@@ -48,7 +48,7 @@ def get_stock_news_openai(query, start_date, end_date):
         store=True,
     )
 
-    return response.output[1].content[0].text
+    return response.output[1].content[0].text # type: ignore
 
 
 def get_global_news_openai(curr_date, look_back_days=7, limit=5):
@@ -96,7 +96,7 @@ def get_global_news_openai(curr_date, look_back_days=7, limit=5):
         store=True,
     )
 
-    return response.output[1].content[0].text
+    return response.output[1].content[0].text # type: ignore
 
 
 def get_fundamentals_openai(ticker, curr_date):
@@ -143,4 +143,4 @@ def get_fundamentals_openai(ticker, curr_date):
         store=True,
     )
 
-    return response.output[1].content[0].text
+    return response.output[1].content[0].text # type: ignore

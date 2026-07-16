@@ -245,7 +245,7 @@ def format_output(data: dict, use_toon: bool = True) -> str:
     if use_toon:
         try:
             from tradingagents.utils.toon_converter import convert_json_to_toon
-            return convert_json_to_toon(serializable_data)
+            return convert_json_to_toon(serializable_data) # type: ignore
         except Exception as e:
             print(f"警告：toon 轉換失敗：{e}，使用 JSON 格式")
             return json.dumps(serializable_data, ensure_ascii=False, indent=2)

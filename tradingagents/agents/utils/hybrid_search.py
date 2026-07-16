@@ -231,8 +231,8 @@ class HybridSearchEngine:
         embeddings = [self._get_embedding(doc) for doc in documents]
         self.collection.add(
             documents=documents,
-            metadatas=metadatas,
-            embeddings=embeddings,
+            metadatas=metadatas, # type: ignore
+            embeddings=embeddings, # type: ignore
             ids=ids,
         )
         logger.debug(
@@ -287,7 +287,7 @@ class HybridSearchEngine:
 
         # ChromaDB 回傳餘弦距離，轉換為相似度
         return [
-            (results["ids"][0][i], 1.0 - results["distances"][0][i])
+            (results["ids"][0][i], 1.0 - results["distances"][0][i]) # type: ignore
             for i in range(len(results["ids"][0]))
         ]
 

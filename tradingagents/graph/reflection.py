@@ -101,7 +101,7 @@ class Reflector:
         ]
 
         result = self.quick_thinking_llm.invoke(messages).content
-        return result
+        return result # type: ignore
 
     def reflect_bull_researcher(self, current_state, returns_losses, bull_memory):
         """

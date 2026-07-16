@@ -24,7 +24,7 @@ def get_fundamentals(
 def get_balance_sheet(
     ticker: Annotated[str, "股票代碼"],
     freq: Annotated[str, "報告頻率：年度/季度"] = "quarterly",
-    curr_date: Annotated[str, "您正在交易的當前日期，格式為 yyyy-mm-dd"] = None,
+    curr_date: Annotated[str, "您正在交易的當前日期，格式為 yyyy-mm-dd"] = None, # type: ignore
 ) -> str:
     """
     檢索給定股票代碼的資產負債表數據。
@@ -43,7 +43,7 @@ def get_balance_sheet(
 def get_cashflow(
     ticker: Annotated[str, "股票代碼"],
     freq: Annotated[str, "報告頻率：年度/季度"] = "quarterly",
-    curr_date: Annotated[str, "您正在交易的當前日期，格式為 yyyy-mm-dd"] = None,
+    curr_date: Annotated[str, "您正在交易的當前日期，格式為 yyyy-mm-dd"] = None, # type: ignore
 ) -> str:
     """
     檢索給定股票代碼的現金流量表數據。
@@ -62,7 +62,7 @@ def get_cashflow(
 def get_income_statement(
     ticker: Annotated[str, "股票代碼"],
     freq: Annotated[str, "報告頻率：年度/季度"] = "quarterly",
-    curr_date: Annotated[str, "您正在交易的當前日期，格式為 yyyy-mm-dd"] = None,
+    curr_date: Annotated[str, "您正在交易的當前日期，格式為 yyyy-mm-dd"] = None, # type: ignore
 ) -> str:
     """
     檢索給定股票代碼的損益表數據。

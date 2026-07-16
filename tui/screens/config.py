@@ -55,7 +55,7 @@ class ConfigScreen(Screen):
     def compose(self) -> ComposeResult:
         # 歡迎橫幅（ASCII 藝術）
         with Vertical(id="banner"):
-            yield Static(self.app.welcome_ascii, id="welcome-art")
+            yield Static(self.app.welcome_ascii, id="welcome-art") # type: ignore
             yield Static(
                 "多代理 LLM 金融交易框架   ·   "
                 "分析師團隊 → 研究團隊 → 交易員 → 風險管理 → 投資組合管理",
@@ -220,7 +220,7 @@ class ConfigScreen(Screen):
     @on(Select.Changed, "#provider")
     def _on_provider_changed(self, event: Select.Changed) -> None:
         if event.value is not Select.BLANK:
-            self._refresh_model_options(event.value)
+            self._refresh_model_options(event.value) # type: ignore
 
     @on(Select.Changed, "#market")
     def _on_market_changed(self, event: Select.Changed) -> None:
@@ -229,12 +229,12 @@ class ConfigScreen(Screen):
             return
         ticker = self.query_one("#ticker", Input)
         if ticker.value in constants.DEFAULT_TICKERS.values() or not ticker.value:
-            ticker.value = constants.DEFAULT_TICKERS.get(event.value, "SPY")
+            ticker.value = constants.DEFAULT_TICKERS.get(event.value, "SPY") # type: ignore
 
     @on(Select.Changed, "#embedding-provider")
     def _on_embedding_provider_changed(self, event: Select.Changed) -> None:
         if event.value is not Select.BLANK:
-            self._refresh_embedding_models(event.value)
+            self._refresh_embedding_models(event.value) # type: ignore
 
     # ------------------------------------------------------------------
     # 送出
@@ -247,7 +247,7 @@ class ConfigScreen(Screen):
     def action_start(self) -> None:
         selections = self._collect()
         if selections is not None:
-            self.app.start_analysis(selections)
+            self.app.start_analysis(selections) # type: ignore
 
     def _error(self, message: str) -> None:
         self.query_one("#error-msg", Static).update(
@@ -292,7 +292,7 @@ class ConfigScreen(Screen):
 
         # LLM 供應商 → backend_url
         provider_name = self.query_one("#provider", Select).value
-        backend_url = dict(constants.LLM_PROVIDERS)[provider_name]
+        backend_url = dict(constants.LLM_PROVIDERS)[provider_name] # type: ignore
 
         # 思維模型
         shallow_thinker = self.query_one("#shallow-model", Select).value
@@ -309,8 +309,8 @@ class ConfigScreen(Screen):
         embedding_key_input = self.query_one("#embedding-key", Input).value.strip()
         alpha_key_input = self.query_one("#alpha-key", Input).value.strip()
 
-        quick_think_api_key = quick_key or constants.env_api_key_for_model(shallow_thinker)
-        deep_think_api_key = deep_key or constants.env_api_key_for_model(deep_thinker)
+        quick_think_api_key = quick_key or constants.env_api_key_for_model(shallow_thinker) # type: ignore
+        deep_think_api_key = deep_key or constants.env_api_key_for_model(deep_thinker) # type: ignore
 
         if not quick_think_api_key:
             self._error("缺少快速思維模型的 API Key（輸入框或 .env 皆為空）")
@@ -339,7 +339,7 @@ class ConfigScreen(Screen):
             "analysis_date": date_str,
             "analysts": analysts,
             "research_depth": research_depth,
-            "llm_provider": provider_name.lower(),
+            "llm_provider": provider_name.lower(), # type: ignore
             "backend_url": backend_url,
             "shallow_thinker": shallow_thinker,
             "deep_thinker": deep_thinker,

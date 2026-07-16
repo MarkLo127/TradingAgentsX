@@ -32,9 +32,9 @@ def get_YFin_data_window(
     # 讀取數據
     data = pl.read_csv(
         os.path.join(
-            DATA_DIR,
+            DATA_DIR, # type: ignore
             f"market_data/price_data/{symbol}-YFin-data-2015-01-01-2025-03-25.csv",
-        )
+        ) # type: ignore
     )
 
     # 節取日期部分
@@ -77,9 +77,9 @@ def get_YFin_data(
     # 讀取數據
     data = pl.read_csv(
         os.path.join(
-            DATA_DIR,
+            DATA_DIR, # type: ignore
             f"market_data/price_data/{symbol}-YFin-data-2015-01-01-2025-03-25.csv",
-        )
+        ) # type: ignore
     )
 
     if end_date > "2025-03-25":
@@ -103,7 +103,7 @@ def get_YFin_data(
     # 重置索引 (在 polars 中不需要，但保持一致性)
     # filtered_data = filtered_data.with_row_count(name="index", offset=0)
 
-    return filtered_data
+    return filtered_data # type: ignore
 
 def get_finnhub_news(
     query: Annotated[str, "搜索查詢或股票代碼"],
@@ -273,14 +273,14 @@ def get_simfin_balance_sheet(
     curr_date: Annotated[str, "您正在交易的當前日期，格式為 yyyy-mm-dd"],
 ):
     data_path = os.path.join(
-        DATA_DIR,
+        DATA_DIR, # type: ignore
         "fundamental_data",
         "simfin_data_all",
         "balance_sheet",
         "companies",
         "us",
         f"us-balance-{freq}.csv",
-    )
+    ) # type: ignore
     df = pl.read_csv(data_path, separator=";")
 
     # 將日期字串轉換為日期時間物件並移除任何時間部分
@@ -304,7 +304,7 @@ def get_simfin_balance_sheet(
         return ""
 
     # 通過選擇具有最新發布日期的行來獲取最新的資產負債表
-    max_date_idx = filtered_df.select(pl.col("Publish Date")).arg_max()
+    max_date_idx = filtered_df.select(pl.col("Publish Date")).arg_max() # type: ignore
     latest_balance_sheet = filtered_df.row(max_date_idx, named=True)
 
     # 刪除 SimFinID 欄位
@@ -326,14 +326,14 @@ def get_simfin_cashflow(
     curr_date: Annotated[str, "您正在交易的當前日期，格式為 yyyy-mm-dd"],
 ):
     data_path = os.path.join(
-        DATA_DIR,
+        DATA_DIR, # type: ignore
         "fundamental_data",
         "simfin_data_all",
         "cash_flow",
         "companies",
         "us",
         f"us-cashflow-{freq}.csv",
-    )
+    ) # type: ignore
     df = pl.read_csv(data_path, separator=";")
 
     # 將日期字串轉換為日期時間物件並移除任何時間部分
@@ -357,11 +357,11 @@ def get_simfin_cashflow(
         return ""
 
     # 通過選擇具有最新發布日期的行來獲取最新的現金流量表
-    max_date_idx = filtered_df.select(pl.col("Publish Date")).arg_max()
+    max_date_idx = filtered_df.select(pl.col("Publish Date")).arg_max() # type: ignore
     latest_cash_flow = filtered_df.row(max_date_idx, named=True)
 
     # 刪除 SimFinID 欄位
-    latest_cash_flow = latest_cash_flow.drop("SimFinId")
+    latest_cash_flow = latest_cash_flow.drop("SimFinId") # type: ignore
 
     return (
         f"## {ticker} 於 {str(latest_cash_flow['Publish Date'])[0:10]} 發布的 {freq} 現金流量表：\n"
@@ -379,14 +379,14 @@ def get_simfin_income_statements(
     curr_date: Annotated[str, "您正在交易的當前日期，格式為 yyyy-mm-dd"],
 ):
     data_path = os.path.join(
-        DATA_DIR,
+        DATA_DIR, # type: ignore
         "fundamental_data",
         "simfin_data_all",
         "income_statements",
         "companies",
         "us",
         f"us-income-{freq}.csv",
-    )
+    ) # type: ignore
     df = pl.read_csv(data_path, separator=";")
 
     # 將日期字串轉換為日期時間物件並移除任何時間部分
@@ -410,11 +410,11 @@ def get_simfin_income_statements(
         return ""
 
     # 通過選擇具有最新發布日期的行來獲取最新的損益表
-    max_date_idx = filtered_df.select(pl.col("Publish Date")).arg_max()
+    max_date_idx = filtered_df.select(pl.col("Publish Date")).arg_max() # type: ignore
     latest_income = filtered_df.row(max_date_idx, named=True)
 
     # 刪除 SimFinID 欄位
-    latest_income = latest_income.drop("SimFinId")
+    latest_income = latest_income.drop("SimFinId") # type: ignore
 
     return (
         f"## {ticker} 於 {str(latest_income['Publish Date'])[0:10]} 發布的 {freq} 損益表：\n"
@@ -439,7 +439,7 @@ def get_reddit_global_news(
     """
     
     # 檢查數據目錄是否存在
-    reddit_data_path = os.path.join(DATA_DIR, "reddit_data")
+    reddit_data_path = os.path.join(DATA_DIR, "reddit_data") # type: ignore
     global_news_path = os.path.join(reddit_data_path, "global_news")
     
     if not os.path.exists(reddit_data_path):
@@ -508,7 +508,7 @@ def get_reddit_company_news(
     """
     
     # 檢查數據目錄是否存在
-    reddit_data_path = os.path.join(DATA_DIR, "reddit_data")
+    reddit_data_path = os.path.join(DATA_DIR, "reddit_data") # type: ignore
     company_news_path = os.path.join(reddit_data_path, "company_news")
     
     if not os.path.exists(reddit_data_path):

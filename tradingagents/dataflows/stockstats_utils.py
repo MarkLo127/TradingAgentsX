@@ -45,9 +45,9 @@ class StockstatsUtils:
             try:
                 data = pl.read_csv(
                     os.path.join(
-                        DATA_DIR,
+                        DATA_DIR, # type: ignore
                         f"{symbol}-YFin-data-2015-01-01-2025-03-25.csv",
-                    )
+                    ) # type: ignore
                 )
                 # stockstats 需要 pandas DataFrame
                 data_pd = data.to_pandas()
@@ -84,7 +84,7 @@ class StockstatsUtils:
                     progress=False,
                     auto_adjust=False,
                 )
-                data_yf = data_yf.reset_index()
+                data_yf = data_yf.reset_index() # type: ignore
                 data_yf.to_csv(data_file, index=False)
                 data = pl.from_pandas(data_yf)
 

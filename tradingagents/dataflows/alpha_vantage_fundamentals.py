@@ -3,7 +3,7 @@ import json
 import os
 
 
-def get_fundamentals(ticker: str, curr_date: str = None, use_toon: bool = True) -> str:
+def get_fundamentals(ticker: str, curr_date: str = None, use_toon: bool = True) -> str: # type: ignore
     """
     使用 Alpha Vantage 檢索給定股票代碼的綜合基本面數據。
 
@@ -78,14 +78,14 @@ def get_fundamentals(ticker: str, curr_date: str = None, use_toon: bool = True) 
             else:
                 return json.dumps(summarized_data, ensure_ascii=False, indent=2)
         
-        return response
+        return response # type: ignore
         
     except (json.JSONDecodeError, Exception) as e:
         print(f"警告：無法總結基本面數據：{e}")
-        return response
+        return response # type: ignore
 
 
-def get_balance_sheet(ticker: str, freq: str = "quarterly", curr_date: str = None, use_toon: bool = True) -> str:
+def get_balance_sheet(ticker: str, freq: str = "quarterly", curr_date: str = None, use_toon: bool = True) -> str: # type: ignore
     """
     使用 Alpha Vantage 檢索給定股票代碼的資產負債表數據。
 
@@ -128,14 +128,14 @@ def get_balance_sheet(ticker: str, freq: str = "quarterly", curr_date: str = Non
             else:
                 return json.dumps(data, ensure_ascii=False, indent=2)
         
-        return response
+        return response # type: ignore
         
     except (json.JSONDecodeError, Exception) as e:
         print(f"警告：無法處理資產負債表數據：{e}")
-        return response
+        return response # type: ignore
 
 
-def get_cashflow(ticker: str, freq: str = "quarterly", curr_date: str = None, use_toon: bool = True) -> str:
+def get_cashflow(ticker: str, freq: str = "quarterly", curr_date: str = None, use_toon: bool = True) -> str: # type: ignore
     """
     使用 Alpha Vantage 檢索給定股票代碼的現金流量表數據。
 
@@ -178,14 +178,14 @@ def get_cashflow(ticker: str, freq: str = "quarterly", curr_date: str = None, us
             else:
                 return json.dumps(data, ensure_ascii=False, indent=2)
         
-        return response
+        return response # type: ignore
         
     except (json.JSONDecodeError, Exception) as e:
         print(f"警告：無法處理現金流量表數據：{e}")
-        return response
+        return response # type: ignore
 
 
-def get_income_statement(ticker: str, freq: str = "quarterly", curr_date: str = None, use_toon: bool = True) -> str:
+def get_income_statement(ticker: str, freq: str = "quarterly", curr_date: str = None, use_toon: bool = True) -> str: # type: ignore
     """
     使用 Alpha Vantage 檢索給定股票代碼的損益表數據。
 
@@ -228,8 +228,8 @@ def get_income_statement(ticker: str, freq: str = "quarterly", curr_date: str = 
             else:
                 return json.dumps(data, ensure_ascii=False, indent=2)
         
-        return response
+        return response # type: ignore
         
     except (json.JSONDecodeError, Exception) as e:
         print(f"警告：無法處理損益表數據：{e}")
-        return response
+        return response # type: ignore

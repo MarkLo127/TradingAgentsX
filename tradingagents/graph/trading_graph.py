@@ -59,7 +59,7 @@ class TradingAgentsXGraph:
         self,
         selected_analysts=["market", "social", "news", "fundamentals"],
         debug=False,
-        config: Dict[str, Any] = None,
+        config: Dict[str, Any] = None, # type: ignore
     ):
         """
         初始化交易代理圖和組件。
@@ -113,13 +113,13 @@ class TradingAgentsXGraph:
             # Anthropic models require ChatAnthropic (different auth header: x-api-key)
             if model.startswith("claude-"):
                 return ChatAnthropic(
-                    model=model,
-                    anthropic_api_key=api_key,
-                    max_tokens=max_tokens,
+                    model=model, # type: ignore
+                    anthropic_api_key=api_key, # type: ignore
+                    max_tokens=max_tokens, # type: ignore
                     max_retries=5,  # 處理 529 overloaded_error，預設只重試 2 次
                     # 啟用 Prompt Caching beta（實際快取效果需搭配 cache_control content block）
                     model_kwargs={"extra_headers": {"anthropic-beta": "prompt-caching-2024-07-31"}},
-                )
+                ) # type: ignore
             # Google Gemini models use ChatGoogleGenerativeAI
             elif model.startswith("gemini-"):
                 return ChatGoogleGenerativeAI(
@@ -132,8 +132,8 @@ class TradingAgentsXGraph:
                 return ChatOpenAI(
                     model=model,
                     base_url=base_url,
-                    openai_api_key=api_key,
-                    max_tokens=max_tokens,
+                    openai_api_key=api_key, # type: ignore
+                    max_tokens=max_tokens, # type: ignore
                 )
 
         # Initialize LLMs independently
@@ -142,7 +142,7 @@ class TradingAgentsXGraph:
         print(f"DEBUG: Initializing Deep Thinking LLM: Model={self.config['deep_think_llm']}, BaseURL={deep_base_url}, Key=**********")
         self.deep_thinking_llm = _create_llm(
             self.config["deep_think_llm"],
-            deep_base_url,
+            deep_base_url, # type: ignore
             deep_api_key,
             max_tokens=16384,
         )
@@ -150,7 +150,7 @@ class TradingAgentsXGraph:
         print(f"DEBUG: Initializing Quick Thinking LLM: Model={self.config['quick_think_llm']}, BaseURL={quick_base_url}, Key=**********")
         self.quick_thinking_llm = _create_llm(
             self.config["quick_think_llm"],
-            quick_base_url,
+            quick_base_url, # type: ignore
             quick_api_key,
             max_tokens=8192,
         )
@@ -174,8 +174,8 @@ class TradingAgentsXGraph:
             max_risk_discuss_rounds=self.config.get("max_risk_discuss_rounds", 1),
         )
         self.graph_setup = GraphSetup(
-            self.quick_thinking_llm,
-            self.deep_thinking_llm,
+            self.quick_thinking_llm, # type: ignore
+            self.deep_thinking_llm, # type: ignore
             self.tool_nodes,
             self.bull_memory,
             self.bear_memory,
@@ -189,8 +189,8 @@ class TradingAgentsXGraph:
         self.propagator = Propagator(
             max_recur_limit=self.config.get("max_recur_limit", 200),
         )
-        self.reflector = Reflector(self.quick_thinking_llm)
-        self.signal_processor = SignalProcessor(self.quick_thinking_llm)
+        self.reflector = Reflector(self.quick_thinking_llm) # type: ignore
+        self.signal_processor = SignalProcessor(self.quick_thinking_llm) # type: ignore
 
         # 狀態追蹤
         self.curr_state = None
@@ -262,7 +262,7 @@ class TradingAgentsXGraph:
         if self.debug:
             # 帶有追蹤的除錯模式
             trace = []
-            for chunk in self.graph.stream(init_agent_state, **args):
+            for chunk in self.graph.stream(init_agent_state, **args): # type: ignore
                 if len(chunk["messages"]) == 0:
                     pass
                 else:
@@ -272,7 +272,7 @@ class TradingAgentsXGraph:
             final_state = trace[-1]
         else:
             # 不帶追蹤的標準模式
-            final_state = self.graph.invoke(init_agent_state, **args)
+            final_state = self.graph.invoke(init_agent_state, **args) # type: ignore
 
         # 儲存當前狀態以供反思
         self.curr_state = final_state

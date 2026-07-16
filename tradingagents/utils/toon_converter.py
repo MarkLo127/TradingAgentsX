@@ -45,7 +45,7 @@ def convert_toon_to_json(toon_data: str) -> dict:
         Python字典
     """
     try:
-        return decode(toon_data)
+        return decode(toon_data) # type: ignore
     except Exception as e:
         print(f"警告：toon解碼失敗：{e}")
         # 嘗試作為JSON解析

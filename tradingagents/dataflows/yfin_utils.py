@@ -26,19 +26,19 @@ class YFinanceUtils:
     """
 
     def get_stock_data(
-        symbol: Annotated[str, "股票代碼"],
+        symbol: Annotated[str, "股票代碼"], # type: ignore
         start_date: Annotated[
             str, "檢索股價數據的開始日期，格式為 YYYY-mm-dd"
         ],
         end_date: Annotated[
             str, "檢索股價數據的結束日期，格式為 YYYY-mm-dd"
         ],
-        save_path: SavePathType = None,
+        save_path: SavePathType = None, # type: ignore
     ) -> pl.DataFrame:
         """檢索指定股票代碼的股價數據"""
         from datetime import datetime, timedelta
         ticker = symbol  # 這裡 symbol 已被裝飾器轉換為 yf.Ticker 對象
-        ticker_symbol = ticker.ticker  # 獲取股票代碼字串
+        ticker_symbol = ticker.ticker  # type: ignore # 獲取股票代碼字串
         # 將結束日期加一天，使數據範圍包含結束日期
         end_date_dt = datetime.strptime(end_date, "%Y-%m-%d") + timedelta(days=1)
         end_date = end_date_dt.strftime("%Y-%m-%d")
@@ -53,25 +53,25 @@ class YFinanceUtils:
             timeout=30
         )
         # 轉換為 polars DataFrame
-        stock_data_pl = pl.from_pandas(stock_data.reset_index())
+        stock_data_pl = pl.from_pandas(stock_data.reset_index()) # type: ignore
         # save_output(stock_data_pl, f"{ticker_symbol} 的股票數據", save_path)
         return stock_data_pl
 
     def get_stock_info(
-        symbol: Annotated[str, "股票代碼"],
+        symbol: Annotated[str, "股票代碼"], # type: ignore
     ) -> dict:
         """獲取並返回最新的股票資訊。"""
         ticker = symbol
-        stock_info = ticker.info
+        stock_info = ticker.info # type: ignore
         return stock_info
 
     def get_company_info(
-        symbol: Annotated[str, "股票代碼"],
+        symbol: Annotated[str, "股票代碼"], # type: ignore
         save_path: Optional[str] = None,
     ) -> pl.DataFrame:
         """獲取並以 DataFrame 形式返回公司資訊。"""
         ticker = symbol
-        info = ticker.info
+        info = ticker.info # type: ignore
         company_info = {
             "公司名稱": info.get("shortName", "N/A"),
             "行業": info.get("industry", "N/A"),
@@ -82,44 +82,44 @@ class YFinanceUtils:
         company_info_df = pl.DataFrame([company_info])
         if save_path:
             company_info_df.write_csv(save_path)
-            print(f"{ticker.ticker} 的公司資訊已儲存至 {save_path}")
+            print(f"{ticker.ticker} 的公司資訊已儲存至 {save_path}") # type: ignore
         return company_info_df
 
     def get_stock_dividends(
-        symbol: Annotated[str, "股票代碼"],
+        symbol: Annotated[str, "股票代碼"], # type: ignore
         save_path: Optional[str] = None,
     ) -> pl.DataFrame:
         """獲取並以 DataFrame 形式返回最新的股息數據。"""
         ticker = symbol
-        dividends = ticker.dividends
+        dividends = ticker.dividends # type: ignore
         dividends_pl = pl.from_pandas(dividends.reset_index())
         if save_path:
             dividends_pl.write_csv(save_path)
-            print(f"{ticker.ticker} 的股息已儲存至 {save_path}")
+            print(f"{ticker.ticker} 的股息已儲存至 {save_path}") # type: ignore
         return dividends_pl
 
-    def get_income_stmt(symbol: Annotated[str, "股票代碼"]) -> pl.DataFrame:
+    def get_income_stmt(symbol: Annotated[str, "股票代碼"]) -> pl.DataFrame: # type: ignore
         """獲取並以 DataFrame 形式返回公司最新的損益表。"""
         ticker = symbol
-        income_stmt = ticker.financials
+        income_stmt = ticker.financials # type: ignore
         return pl.from_pandas(income_stmt.reset_index())
 
-    def get_balance_sheet(symbol: Annotated[str, "股票代碼"]) -> pl.DataFrame:
+    def get_balance_sheet(symbol: Annotated[str, "股票代碼"]) -> pl.DataFrame: # type: ignore
         """獲取並以 DataFrame 形式返回公司最新的資產負債表。"""
         ticker = symbol
-        balance_sheet = ticker.balance_sheet
+        balance_sheet = ticker.balance_sheet # type: ignore
         return pl.from_pandas(balance_sheet.reset_index())
 
-    def get_cash_flow(symbol: Annotated[str, "股票代碼"]) -> pl.DataFrame:
+    def get_cash_flow(symbol: Annotated[str, "股票代碼"]) -> pl.DataFrame: # type: ignore
         """獲取並以 DataFrame 形式返回公司最新的現金流量表。"""
         ticker = symbol
-        cash_flow = ticker.cashflow
+        cash_flow = ticker.cashflow # type: ignore
         return pl.from_pandas(cash_flow.reset_index())
 
-    def get_analyst_recommendations(symbol: Annotated[str, "股票代碼"]) -> tuple:
+    def get_analyst_recommendations(symbol: Annotated[str, "股票代碼"]) -> tuple: # type: ignore
         """獲取最新的分析師建議，並返回最常見的建議及其計數。"""
         ticker = symbol
-        recommendations = ticker.recommendations
+        recommendations = ticker.recommendations # type: ignore
         if recommendations.empty:
             return None, 0  # 沒有可用的建議
 
