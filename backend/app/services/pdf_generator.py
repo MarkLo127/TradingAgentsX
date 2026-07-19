@@ -118,30 +118,34 @@ def get_pdf_label(key: str, language: str = 'zh-TW') -> str:
 # Model ID → human-readable display name mapping
 _MODEL_DISPLAY_NAMES: dict[str, str] = {
     # Anthropic Claude
-    "claude-opus-4-7": "Claude Opus 4.7",
+    "claude-fable-5": "Claude Fable 5",
+    "claude-opus-4-8": "Claude Opus 4.8",
+    "claude-sonnet-5": "Claude Sonnet 5",
     "claude-haiku-4-5-20251001": "Claude Haiku 4.5",
-    "claude-sonnet-4-6": "Claude Sonnet 4.6",
-    "claude-sonnet-4-20250514": "Claude Sonnet 4",
-    "claude-3-haiku-20240307": "Claude 3 Haiku",
+    
     # Google Gemini
-    "gemini-3.1-pro-preview": "Gemini 3.1 Pro",
-    "gemini-3-flash-preview": "Gemini 3 Flash",
-    "gemini-3.1-flash-lite-preview": "Gemini 3.1 Flash Lite",
+    "gemini-3.5-flash": "Gemini 3.5 Flash",
+    "gemini-3.1-flash-lite": "Gemini 3.1 Flash-Lite",
+    
     # OpenAI
-    "gpt-5.4": "GPT 5.4",
-    "gpt-5.4-mini": "GPT 5.4 Mini",
-    "gpt-5.4-nano": "GPT 5.4 Nano",
+    "gpt-5.6-sol": "GPT-5.6 Sol",
+    "gpt-5.6-terra": "GPT-5.6 Terra",
+    "gpt-5.6-luna": "GPT-5.6 Luna",
+    
     # Grok
-    "grok-4.20-multi-agent-0309": "Grok 4.2 Multi Agent",
-    "grok-4.20-0309-reasoning": "Grok 4.2 Reasoning",
-    "grok-4.20-0309-non-reasoning": "Grok 4.2",
+    "grok-4.5": "Grok 4.5",
+    "grok-4.3":"Grok 4.3",
+    "grok-4.20-0309-reasoning": "Grok 4.20",
+    "grok-4.20-0309-non-reasoning": "Grok 4.20 (Non-Reasoning)",
+    
     # DeepSeek
     "deepseek-v4-pro": "Deepseek V4 Pro",
     "deepseek-v4-flash": "Deepseek V4 Flash",
+    
     # Qwen
-    "qwen3-max": "Qwen 3 Max",
-    "qwen3.5-plus": "Qwen 3.5 Plus",
-    "qwen3.5-flash": "Qwen 3.5 Flash",
+    "qwen3.7-max": "Qwen3.7-Max",
+    "qwen3.7-plus": "Qwen3.7-Plus",
+    "qwen3.5-flash": "Qwen3.5-Flash",
 }
 
 

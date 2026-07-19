@@ -26,7 +26,7 @@ class TradingService:
     def create_config(
         self,
         research_depth: int = 1,
-        deep_think_llm: str = "claude-sonnet-4-6",
+        deep_think_llm: str = "claude-sonnet-5",
         quick_think_llm: str = "claude-haiku-4-5-20251001",
     ) -> Dict[str, Any]:
         """Create configuration for TradingAgentsX
@@ -63,8 +63,8 @@ class TradingService:
         market_type: str = "us",  # 市場類型：us (美股) 或 tw (台股)
         analysts: Optional[List[str]] = None,
         research_depth: int = 1,
-        deep_think_llm: str = "claude-sonnet-4-6",
-        quick_think_llm: str = "claude-haiku-4-5-20251001",
+        deep_think_llm: str = "claude-sonnet-5",
+        quick_think_llm: str = "claude-opus-4-8",
         language: str = "zh-TW",  # Language for agent reports: 'en' or 'zh-TW'
     ) -> Dict[str, Any]:
         """
@@ -370,29 +370,28 @@ class TradingService:
         """Get list of available OpenAI LLM models"""
         return [
             # OpenAI
-            "gpt-5.4",
-            "gpt-5.4-mini",
-            "gpt-5.4-nano",
+            "gpt-5.6-sol",
+            "gpt-5.6-terra",
+            "gpt-5.6-luna",
             # Anthropic (Official model IDs)
-            "claude-opus-4-7",
-            "claude-sonnet-4-6",
+            "claude-fable-5",
+            "claude-opus-4-8",
+            "claude-sonnet-5",
             "claude-haiku-4-5-20251001",
-            "claude-sonnet-4-20250514",
-            "claude-3-haiku-20240307",
             # Google
-            "gemini-3.1-pro-preview",
-            "gemini-3-flash-preview",
-            "gemini-3.1-flash-lite-preview",
+            "gemini-3.5-flash",
+            "gemini-3.1-flash-lite",
             # Grok
-            "grok-4.20-multi-agent-0309",
+            "grok-4.5",
+            "grok-4.3",
             "grok-4.20-0309-reasoning",
             "grok-4.20-0309-non-reasoning",
             # DeepSeek
             "deepseek-v4-pro",
             "deepseek-v4-flash",
             # Qwen
-            "qwen3-max",
-            "qwen3.5-plus",
+            "qwen3.7-max",
+            "qwen3.7-plus",
             "qwen3.5-flash",
         ]
     
@@ -400,7 +399,7 @@ class TradingService:
         """Get default configuration"""
         return {
             "research_depth": 1,
-            "deep_think_llm": "claude-sonnet-4-6",
+            "deep_think_llm": "claude-sonnet-5",
             "quick_think_llm": "claude-haiku-4-5-20251001",
             "max_debate_rounds": 1,
             "max_risk_discuss_rounds": 1,

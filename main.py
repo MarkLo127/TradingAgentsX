@@ -8,7 +8,7 @@ load_dotenv(override=True)
 
 # 建立自訂設定
 config = DEFAULT_CONFIG.copy()
-config["deep_think_llm"] = "claude-sonnet-4-6"  # 使用不同的模型
+config["deep_think_llm"] = "claude-sonnet-5"  # 使用不同的模型
 config["quick_think_llm"] = "claude-haiku-4-5-20251001"  # 快速思考使用較輕量模型
 config["max_debate_rounds"] = 1  # 增加辯論回合
 

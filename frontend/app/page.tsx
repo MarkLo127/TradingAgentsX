@@ -142,12 +142,12 @@ export default function HomePage() {
             {t.home.llmSupportDesc}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <LLMProviderCard name="OpenAI" models={["GPT-5.4", "GPT-5.4 Mini", "GPT-5.4 Nano"]} />
-            <LLMProviderCard name="Anthropic" models={["Claude Opus 4.7","Claude Sonnet 4.6/4.0","Claude 4.5/3.5 Haiku"]} />
-            <LLMProviderCard name="Google Gemini" models={["Gemini 3.1 Pro/Flash/Lite"]} />
-            <LLMProviderCard name="Grok (xAI)" models={["Grok-4.1 Fast", "Grok-4 Fast"]} />
+            <LLMProviderCard name="OpenAI" models={["GPT-5.6 Sol", "GPT-5.6 Terra", "GPT-5.6 Luna"]} />
+            <LLMProviderCard name="Anthropic" models={["Claude Fable 5","Claude Opus 4.8","Claude Sonnet 5","Claude Haiku 4.5"]} />
+            <LLMProviderCard name="Google Gemini" models={["Gemini 3.5 Flash","Gemini 3.1 Flash-Lite"]} />
+            <LLMProviderCard name="Grok (xAI)" models={["Grok 4.5","Grok 4.3","Grok 4.20","Grok 4.20 (Non-Reasoning)"]} />
             <LLMProviderCard name="DeepSeek" models={["Deepseek V4 Pro", "Deepseek V4 Flash"]} />
-            <LLMProviderCard name="Qwen (Alibaba)" models={["Qwen3-Max", "Qwen-Plus", "Qwen Flash"]} />
+            <LLMProviderCard name="Qwen (Alibaba)" models={["Qwen3.7-Max","Qwen3.7-Plus","Qwen3.5-Flash"]} />
           </div>
           <div className="mt-6 text-center">
             <p className="text-sm text-blue-500/70 dark:text-blue-400/70 font-medium">

@@ -49,7 +49,7 @@ class Settings(BaseSettings):
     results_dir: str = "./results"
     max_debate_rounds: int = 1
     max_risk_discuss_rounds: int = 1
-    deep_think_llm: str = "claude-sonnet-4-6"
+    deep_think_llm: str = "claude-sonnet-5"
     quick_think_llm: str = "claude-haiku-4-5-20251001"
     
     class Config:

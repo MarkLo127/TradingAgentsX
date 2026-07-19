@@ -114,7 +114,7 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
       research_depth: 3, // 預設中等層級
       market_type: "us", // 預設美股
       quick_think_llm: "claude-haiku-4-5-20251001",
-      deep_think_llm: "claude-sonnet-4-6",
+      deep_think_llm: "claude-sonnet-5",
       embedding_model: "all-MiniLM-L6-v2", // 預設使用本地開源模型
       custom_quick_think_model: "",
       custom_deep_think_model: "",
@@ -530,37 +530,44 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
+
                           {/* OpenAI */}
-                          <SelectItem value="gpt-5.4">
+                          <SelectItem value="gpt-5.6-sol">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/openai.svg" alt="OpenAI" width={16} height={16} className="shrink-0" />
-                              <span>GPT-5.4</span>
+                              <span>GPT-5.6 Sol</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="gpt-5.4-mini">
+                          <SelectItem value="gpt-5.6-terra">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/openai.svg" alt="OpenAI" width={16} height={16} className="shrink-0" />
-                              <span>GPT-5.4 Mini</span>
+                              <span>GPT-5.6 Terra</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="gpt-5.4-nano">
+                          <SelectItem value="gpt-5.6-luna">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/openai.svg" alt="OpenAI" width={16} height={16} className="shrink-0" />
-                              <span>GPT-5.4 Nano</span>
+                              <span>GPT-5.6 Luna</span>
                             </div>
                           </SelectItem>
 
                           {/* Anthropic (Official model IDs) */}
-                          <SelectItem value="claude-opus-4-7">
+                          <SelectItem value="claude-fable-5">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/claude-color.svg" alt="Claude" width={16} height={16} className="shrink-0" />
-                              <span>Claude Opus 4.7</span>
+                              <span>Claude Fable 5</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="claude-sonnet-4-6">
+                          <SelectItem value="claude-opus-4-8">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/claude-color.svg" alt="Claude" width={16} height={16} className="shrink-0" />
-                              <span>Claude Sonnet 4.6</span>
+                              <span>Claude Opus 4.8</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="claude-sonnet-5">
+                            <div className="flex items-center gap-2">
+                              <Image src="/logos/claude-color.svg" alt="Claude" width={16} height={16} className="shrink-0" />
+                              <span>Claude Sonnet 5</span>
                             </div>
                           </SelectItem>
                           <SelectItem value="claude-haiku-4-5-20251001">
@@ -568,57 +575,45 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
                               <Image src="/logos/claude-color.svg" alt="Claude" width={16} height={16} className="shrink-0" />
                               <span>Claude Haiku 4.5</span>
                             </div>
-                          </SelectItem>
-                          <SelectItem value="claude-sonnet-4-20250514">
-                            <div className="flex items-center gap-2">
-                              <Image src="/logos/claude-color.svg" alt="Claude" width={16} height={16} className="shrink-0" />
-                              <span>Claude Sonnet 4</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="claude-3-haiku-20240307">
-                            <div className="flex items-center gap-2">
-                              <Image src="/logos/claude-color.svg" alt="Claude" width={16} height={16} className="shrink-0" />
-                              <span>Claude 3 Haiku</span>
-                            </div>
-                          </SelectItem>
+
 
                           {/* Google */}
-                          <SelectItem value="gemini-3.1-pro-preview">
+                          <SelectItem value="gemini-3.5-flash">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/gemini-color.svg" alt="Gemini" width={16} height={16} className="shrink-0" />
-                              <span>Gemini 3.1 Pro</span>
+                              <span>Gemini 3.5 Flash</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="gemini-3-flash-preview">
+                          <SelectItem value="gemini-3.1-flash-lite">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/gemini-color.svg" alt="Gemini" width={16} height={16} className="shrink-0" />
-                              <span>Gemini 3 Flash</span>
+                              <span>Gemini 3.1 Flash-Lite</span>
                             </div>
-                          </SelectItem>
-                          <SelectItem value="gemini-3.1-flash-lite-preview">
-                            <div className="flex items-center gap-2">
-                              <Image src="/logos/gemini-color.svg" alt="Gemini" width={16} height={16} className="shrink-0" />
-                              <span>Gemini 3.1 Flash Lite</span>
-                            </div>
-                          </SelectItem>
+ 
 
                           {/* Grok */}
-                          <SelectItem value="grok-4.20-multi-agent-0309">
+                          <SelectItem value="grok-4.5">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/grok.svg" alt="Grok" width={16} height={16} className="shrink-0" />
-                              <span>Grok 4.2 Multi Agent</span>
+                              <span>Grok 4.5</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="grok-4.3">
+                            <div className="flex items-center gap-2">
+                              <Image src="/logos/grok.svg" alt="Grok" width={16} height={16} className="shrink-0" />
+                              <span>Grok 4.3</span>
                             </div>
                           </SelectItem>
                           <SelectItem value="grok-4.20-0309-reasoning">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/grok.svg" alt="Grok" width={16} height={16} className="shrink-0" />
-                              <span>Grok 4.2 Reasoning</span>
+                              <span>Grok 4.20</span>
                             </div>
                           </SelectItem>
                           <SelectItem value="grok-4.20-0309-non-reasoning">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/grok.svg" alt="Grok" width={16} height={16} className="shrink-0" />
-                              <span>Grok 4.2 Non Reasoning</span>
+                              <span>Grok 4.20 (Non-Reasoning)</span>
                             </div>
                           </SelectItem>
 
@@ -637,22 +632,22 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
                           </SelectItem>
 
                           {/* Qwen */}
-                          <SelectItem value="qwen3-max">
+                          <SelectItem value="qwen3.7-max">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/qwen-color.svg" alt="Qwen" width={16} height={16} className="shrink-0" />
-                              <span>Qwen 3 Max</span>
+                              <span>Qwen3.7-Max</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="qwen3.5-plus">
+                          <SelectItem value="qwen3.7-plus">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/qwen-color.svg" alt="Qwen" width={16} height={16} className="shrink-0" />
-                              <span>Qwen 3.5 Plus</span>
+                              <span>Qwen3.7-Plus</span>
                             </div>
                           </SelectItem>
                           <SelectItem value="qwen3.5-flash">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/qwen-color.svg" alt="Qwen" width={16} height={16} className="shrink-0" />
-                              <span>Qwen 3.5 Flash</span>
+                              <span>Qwen3.5-Flash</span>
                             </div>
                           </SelectItem>
 
@@ -704,94 +699,89 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
+                          
                           {/* OpenAI */}
-                          <SelectItem value="gpt-5.4">
+                          <SelectItem value="gpt-5.6-sol">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/openai.svg" alt="OpenAI" width={16} height={16} className="shrink-0" />
-                              <span>GPT-5.4</span>
+                              <span>GPT-5.6 Sol</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="gpt-5.4-mini">
+                          <SelectItem value="gpt-5.6-terra">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/openai.svg" alt="OpenAI" width={16} height={16} className="shrink-0" />
-                              <span>GPT-5.4 Mini</span>
+                              <span>GPT-5.6 Terra</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="gpt-5.4-nano">
+                          <SelectItem value="gpt-5.6-luna">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/openai.svg" alt="OpenAI" width={16} height={16} className="shrink-0" />
-                              <span>GPT-5.4 Nano</span>
+                              <span>GPT-5.6 Luna</span>
                             </div>
                           </SelectItem>
+
                           {/* Anthropic (Official model IDs) */}
-                          <SelectItem value="claude-opus-4-7">
+                          <SelectItem value="claude-fable-5">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/claude-color.svg" alt="Claude" width={16} height={16} className="shrink-0" />
-                              <span>Claude Opus 4.7</span>
+                              <span>Claude Fable 5</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="claude-sonnet-4-6">
+                          <SelectItem value="claude-opus-4-8">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/claude-color.svg" alt="Claude" width={16} height={16} className="shrink-0" />
-                              <span>Claude Sonnet 4.6</span>
+                              <span>Claude Opus 4.8</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="claude-sonnet-5">
+                            <div className="flex items-center gap-2">
+                              <Image src="/logos/claude-color.svg" alt="Claude" width={16} height={16} className="shrink-0" />
+                              <span>Claude Sonnet 5</span>
                             </div>
                           </SelectItem>
                           <SelectItem value="claude-haiku-4-5-20251001">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/claude-color.svg" alt="Claude" width={16} height={16} className="shrink-0" />
                               <span>Claude Haiku 4.5</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="claude-sonnet-4-20250514">
-                            <div className="flex items-center gap-2">
-                              <Image src="/logos/claude-color.svg" alt="Claude" width={16} height={16} className="shrink-0" />
-                              <span>Claude Sonnet 4</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="claude-3-haiku-20240307">
-                            <div className="flex items-center gap-2">
-                              <Image src="/logos/claude-color.svg" alt="Claude" width={16} height={16} className="shrink-0" />
-                              <span>Claude 3 Haiku</span>
-                            </div>
-                          </SelectItem>
 
                           {/* Google */}
-                          <SelectItem value="gemini-3.1-pro-preview">
+                          <SelectItem value="gemini-3.5-flash">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/gemini-color.svg" alt="Gemini" width={16} height={16} className="shrink-0" />
-                              <span>Gemini 3.1 Pro</span>
+                              <span>Gemini 3.5 Flash</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="gemini-3-flash-preview">
+                          <SelectItem value="gemini-3.1-flash-lite">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/gemini-color.svg" alt="Gemini" width={16} height={16} className="shrink-0" />
-                              <span>Gemini 3 Flash</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="gemini-3.1-flash-lite-preview">
-                            <div className="flex items-center gap-2">
-                              <Image src="/logos/gemini-color.svg" alt="Gemini" width={16} height={16} className="shrink-0" />
-                              <span>Gemini 3.1 Flash Lite</span>
+                              <span>Gemini 3.1 Flash-Lite</span>
                             </div>
                           </SelectItem>
 
+
                           {/* Grok */}
-                          <SelectItem value="grok-4.20-multi-agent-0309">
+                          <SelectItem value="grok-4.5">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/grok.svg" alt="Grok" width={16} height={16} className="shrink-0" />
-                              <span>Grok 4.2 Multi Agent</span>
+                              <span>Grok 4.5</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="grok-4.3">
+                            <div className="flex items-center gap-2">
+                              <Image src="/logos/grok.svg" alt="Grok" width={16} height={16} className="shrink-0" />
+                              <span>Grok 4.3</span>
                             </div>
                           </SelectItem>
                           <SelectItem value="grok-4.20-0309-reasoning">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/grok.svg" alt="Grok" width={16} height={16} className="shrink-0" />
-                              <span>Grok 4.2 Reasoning</span>
+                              <span>Grok 4.20</span>
                             </div>
                           </SelectItem>
                           <SelectItem value="grok-4.20-0309-non-reasoning">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/grok.svg" alt="Grok" width={16} height={16} className="shrink-0" />
-                              <span>Grok 4.2 Non Reasoning</span>
+                              <span>Grok 4.20 (Non-Reasoning)</span>
                             </div>
                           </SelectItem>
 
@@ -810,22 +800,22 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
                           </SelectItem>
 
                           {/* Qwen */}
-                          <SelectItem value="qwen3-max">
+                          <SelectItem value="qwen3.7-max">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/qwen-color.svg" alt="Qwen" width={16} height={16} className="shrink-0" />
-                              <span>Qwen 3 Max</span>
+                              <span>Qwen3.7-Max</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="qwen3.5-plus">
+                          <SelectItem value="qwen3.7-plus">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/qwen-color.svg" alt="Qwen" width={16} height={16} className="shrink-0" />
-                              <span>Qwen 3.5 Plus</span>
+                              <span>Qwen3.7-Plus</span>
                             </div>
                           </SelectItem>
                           <SelectItem value="qwen3.5-flash">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/qwen-color.svg" alt="Qwen" width={16} height={16} className="shrink-0" />
-                              <span>Qwen 3.5 Flash</span>
+                              <span>Qwen3.5-Flash</span>
                             </div>
                           </SelectItem>
 
