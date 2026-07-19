@@ -575,7 +575,7 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
                               <Image src="/logos/claude-color.svg" alt="Claude" width={16} height={16} className="shrink-0" />
                               <span>Claude Haiku 4.5</span>
                             </div>
-
+                          </SelectItem>
 
                           {/* Google */}
                           <SelectItem value="gemini-3.5-flash">
@@ -589,7 +589,7 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
                               <Image src="/logos/gemini-color.svg" alt="Gemini" width={16} height={16} className="shrink-0" />
                               <span>Gemini 3.1 Flash-Lite</span>
                             </div>
- 
+                          </SelectItem>
 
                           {/* Grok */}
                           <SelectItem value="grok-4.5">
@@ -743,6 +743,7 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
                             <div className="flex items-center gap-2">
                               <Image src="/logos/claude-color.svg" alt="Claude" width={16} height={16} className="shrink-0" />
                               <span>Claude Haiku 4.5</span>
+                          </SelectItem>
 
                           {/* Google */}
                           <SelectItem value="gemini-3.5-flash">
