@@ -35,8 +35,14 @@ jobs:
         run: python scripts/refresh_stocks_tw.py
 
       - name: Refresh US stock list
+        # SEC blocks any User-Agent that doesn't contain something
+        # email-shaped (an "@") -- confirmed by reproducing the 403 locally
+        # with the no-"@" fallback this used to have. Set the SEC_CONTACT_EMAIL
+        # repo variable (Settings -> Secrets and variables -> Actions -> Variables)
+        # to your real contact per SEC's fair-access policy; this fallback
+        # only exists to keep the request from being rejected outright.
         env:
-          SEC_CONTACT: ${{ vars.SEC_CONTACT_EMAIL || 'TradingAgentsX-CI (github.com/MarkLo127/TradingAgentsX)' }}
+          SEC_CONTACT: ${{ vars.SEC_CONTACT_EMAIL || 'TradingAgentsX-CI ci@tradingagentsx.invalid' }}
         run: python scripts/refresh_stocks_us.py "$SEC_CONTACT"
 
       - name: Commit and push if changed
