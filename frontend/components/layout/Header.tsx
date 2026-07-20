@@ -21,6 +21,12 @@ export function Header() {
 
   if (pathname === "/history/chat") return null;
 
+  // The analysis results page renders already-generated report text, which
+  // stays fixed in whichever language it was produced in. Switching the UI
+  // locale there would leave the page showing report content and chrome in
+  // two different languages, so the switcher is locked while it's open.
+  const isReportDetailPage = pathname === "/analysis/results";
+
   return (
     <header className="sticky top-0 z-50 border-b border-border dark:border-slate-700/40 bg-white/80 dark:bg-[#0A0F1E]/85 backdrop-blur-xl pwa-safe-header shadow-[0_1px_8px_rgba(15,23,42,0.06)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
       <div className="container mx-auto px-4 py-4 md:py-5">
@@ -62,14 +68,14 @@ export function Header() {
               {t.nav.history}
             </Link>
             <ApiSettingsDialog />
-            <LanguageSwitcher />
+            <LanguageSwitcher disabled={isReportDetailPage} />
             <ThemeToggle />
             <LoginButton />
           </nav>
 
           {/* Mobile Menu Button */}
           <div className="flex md:hidden items-center gap-2">
-            <LanguageSwitcher />
+            <LanguageSwitcher disabled={isReportDetailPage} />
             <ThemeToggle />
             <Button
               variant="ghost"

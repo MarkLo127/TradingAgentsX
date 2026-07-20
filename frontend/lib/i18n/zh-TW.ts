@@ -41,6 +41,8 @@ export const zhTW = {
     history: "歷史報告",
     settings: "設定",
     tagline: "多代理 LLM 金融交易框架",
+    languageLockedOnReport:
+      "瀏覽報告時無法切換語言，因為報告內文會維持產生當下的語言。請先返回分析列表頁再切換語言。",
   },
 
   // Home page

@@ -11,10 +11,36 @@ import {
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Locale, localeNames } from "@/lib/i18n";
 
-export function LanguageSwitcher() {
-  const { locale, setLocale } = useLanguage();
+interface LanguageSwitcherProps {
+  /**
+   * When true, the switcher is rendered as a disabled, inert button instead
+   * of a dropdown trigger. Use this on pages that show already-generated
+   * report text (e.g. the analysis results page) — that text is fixed in
+   * whatever language it was produced in, so letting the UI locale change
+   * mid-view would leave the page showing two languages at once.
+   */
+  disabled?: boolean;
+}
+
+export function LanguageSwitcher({ disabled = false }: LanguageSwitcherProps) {
+  const { locale, setLocale, t } = useLanguage();
 
   const locales: Locale[] = ['en', 'zh-TW'];
+
+  if (disabled) {
+    return (
+      <Button
+        variant="ghost"
+        size="icon"
+        disabled
+        className="text-slate-400 dark:text-slate-600 opacity-50 cursor-not-allowed"
+        aria-label="Switch language (disabled)"
+        title={t.nav.languageLockedOnReport}
+      >
+        <Globe className="h-5 w-5" />
+      </Button>
+    );
+  }
 
   return (
     <DropdownMenu>

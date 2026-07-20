@@ -87,6 +87,8 @@ export const en = {
     history: "History",
     settings: "Settings",
     tagline: "Multi-Agent LLM Trading Framework",
+    languageLockedOnReport:
+      "Language switching is disabled while viewing a report — the generated report text stays in the language it was created in. Go back to the analysis list to switch languages.",
   },
 
   // Home page
