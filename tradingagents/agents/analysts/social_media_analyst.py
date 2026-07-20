@@ -1,7 +1,6 @@
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 import time
 import json
-from tradingagents.agents.utils.agent_utils import get_news
+from tradingagents.agents.utils.agent_utils import get_news, make_cached_system_message
 from tradingagents.agents.utils.prompts import get_social_analyst_prompt, get_agent_role_instruction, get_context_message
 from tradingagents.dataflows.config import get_config
 
@@ -40,24 +39,16 @@ def create_social_media_analyst(llm, language: str = "zh-TW"):
         role_instruction = get_agent_role_instruction(language)
         context_msg = get_context_message(language, current_date, company_name, ticker)
 
-        prompt = ChatPromptTemplate.from_messages(
-            [
-                (
-                    "system",
-                    f"{role_instruction}"
-                    " 您可以使用以下工具：{tool_names}。\n{system_message}"
-                    f" {context_msg}",
-                ),
-                MessagesPlaceholder(variable_name="messages"),
-            ]
+        tool_names = ", ".join([tool.name for tool in tools])
+        # 靜態系統提示合併為單一 cache_control 區塊（僅 Claude 生效）；
+        # analyst 的 tool 迴圈會多輪重送此前綴，命中快取後 cache read 只需原價 10%
+        system_text = (
+            f"{role_instruction} 您可以使用以下工具：{tool_names}。\n"
+            f"{system_message} {context_msg}"
         )
+        messages = [make_cached_system_message(system_text, llm), *state["messages"]]
 
-        prompt = prompt.partial(system_message=system_message)
-        prompt = prompt.partial(tool_names=", ".join([tool.name for tool in tools]))
-
-        chain = prompt | llm.bind_tools(tools)
-
-        result = chain.invoke(state["messages"])
+        result = llm.bind_tools(tools).invoke(messages)
 
         # Report logic: only save report when LLM gives final response
         report = state.get("sentiment_report", "")
