@@ -1,0 +1,52 @@
+name: Refresh stock ticker lists
+
+# Keeps frontend/public/data/stocks-tw.json and stocks-us.json current so
+# newly-IPO'd tickers get autocomplete + a resolved company name instead of
+# falling back to showing the raw ticker code.
+#
+# scripts/refresh_stocks_tw.py pulls the TWSE/TPEx official company
+# registries; scripts/refresh_stocks_us.py pulls SEC EDGAR's ticker list.
+# Both only ever append rows for tickers missing from the JSON -- they never
+# touch or remove existing entries, so this is safe to run unattended and
+# push straight to main. Railway is configured to build both services from
+# git source (see railway.toml), so a push here triggers its own redeploy
+# and puts the refreshed data live -- no separate Railway-side step needed.
+on:
+  schedule:
+    # 20:00 UTC = 04:00 next day in Asia/Taipei (UTC+8) -- runs after both
+    # the TW and US markets have closed for the day.
+    - cron: "0 20 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Refresh TW stock list
+        run: python scripts/refresh_stocks_tw.py
+
+      - name: Refresh US stock list
+        env:
+          SEC_CONTACT: ${{ vars.SEC_CONTACT_EMAIL || 'TradingAgentsX-CI (github.com/MarkLo127/TradingAgentsX)' }}
+        run: python scripts/refresh_stocks_us.py "$SEC_CONTACT"
+
+      - name: Commit and push if changed
+        run: |
+          if git diff --quiet -- frontend/public/data/stocks-tw.json frontend/public/data/stocks-us.json; then
+            echo "No new tickers -- nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add frontend/public/data/stocks-tw.json frontend/public/data/stocks-us.json
+          git commit -m "chore: refresh stock ticker lists [automated]"
+          git push
