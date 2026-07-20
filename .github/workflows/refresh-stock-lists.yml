@@ -13,9 +13,12 @@ name: Refresh stock ticker lists
 # and puts the refreshed data live -- no separate Railway-side step needed.
 on:
   schedule:
-    # 20:00 UTC = 04:00 next day in Asia/Taipei (UTC+8) -- runs after both
-    # the TW and US markets have closed for the day.
-    - cron: "0 20 * * *"
+    # 20:17 UTC ~= 04:17 next day in Asia/Taipei (UTC+8) -- runs after both
+    # the TW and US markets have closed for the day. Deliberately off the
+    # hour (not :00) -- GitHub's own docs warn that scheduled workflows can
+    # be delayed during high-load periods, and the top of every hour is the
+    # single most congested minute on their shared runners.
+    - cron: "17 20 * * *"
   workflow_dispatch: {}
 
 permissions:
