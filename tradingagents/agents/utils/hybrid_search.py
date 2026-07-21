@@ -135,7 +135,7 @@ class HybridSearchEngine:
                     "sentence-transformers 為本地嵌入所必需。"
                     "請執行：pip install sentence-transformers"
                 )
-            model_name = config.get("embedding_model", "all-MiniLM-L6-v2")
+            model_name = config.get("embedding_model", "all-mpnet-base-v2")
             if model_name not in HybridSearchEngine._model_cache:
                 logger.info(f"載入嵌入模型：{model_name}")
                 HybridSearchEngine._model_cache[model_name] = SentenceTransformer(model_name)

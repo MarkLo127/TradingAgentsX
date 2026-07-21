@@ -46,7 +46,7 @@ DEFAULT_CONFIG = {
         #   "local"  — 使用本地 sentence-transformers（不需 API 金鑰，預設）
         #   "openai" — 使用 OpenAI text-embedding 模型（需 API 金鑰）
         "embedding_provider": "local",
-        "embedding_model": "all-MiniLM-L6-v2",
+        "embedding_model": "all-mpnet-base-v2",
         # RRF 常數 k（越大越平滑，預設 60）
         "hybrid_search_k": 60,
         # 向量搜索與 BM25 的融合權重（總和建議為 1.0）

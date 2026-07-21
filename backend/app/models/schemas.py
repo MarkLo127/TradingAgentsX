@@ -50,8 +50,8 @@ class AnalysisRequest(BaseModel):
     )
     embedding_api_key: Optional[str] = Field(None, description="API Key for Embedding Model (only used for OpenAI embeddings)", min_length=0)
     embedding_model: Optional[str] = Field(
-        default="all-MiniLM-L6-v2",
-        description="Embedding model: 'all-MiniLM-L6-v2' (local, no API key), 'text-embedding-3-small' (OpenAI), etc."
+        default="all-mpnet-base-v2",
+        description="Embedding model: 'all-mpnet-base-v2' (local, no API key), 'text-embedding-3-small' (OpenAI), etc."
     )
     alpha_vantage_api_key: Optional[str] = Field(
         None,

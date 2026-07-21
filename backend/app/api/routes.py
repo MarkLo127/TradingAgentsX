@@ -152,7 +152,7 @@ async def run_analysis(
                 deep_think_api_key=request.deep_think_api_key or "",
                 embedding_base_url=request.embedding_base_url, # type: ignore
                 embedding_api_key=request.embedding_api_key or "",
-                embedding_model=request.embedding_model or "all-MiniLM-L6-v2",
+                embedding_model=request.embedding_model or "all-mpnet-base-v2",
                 alpha_vantage_api_key=request.alpha_vantage_api_key or "",
                 finmind_api_key=request.finmind_api_key or "",
                 language=request.language or "zh-TW",  # Pass language for agent reports

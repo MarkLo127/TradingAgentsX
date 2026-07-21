@@ -106,8 +106,7 @@ EMBEDDING_PROVIDERS = [
 ]
 
 LOCAL_EMBEDDING_MODELS = [
-    ("all-MiniLM-L6-v2 (推薦) - 90MB, 輕量快速", "all-MiniLM-L6-v2"),
-    ("all-mpnet-base-v2 - 420MB, 更高質量", "all-mpnet-base-v2"),
+    ("all-mpnet-base-v2 (推薦) - 420MB, 更高質量", "all-mpnet-base-v2"),
 ]
 
 OPENAI_EMBEDDING_MODELS = [

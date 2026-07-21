@@ -57,7 +57,7 @@ class TradingService:
         deep_think_api_key: Optional[str] = None,
         embedding_base_url: str = "https://api.openai.com/v1",
         embedding_api_key: Optional[str] = None,
-        embedding_model: str = "all-MiniLM-L6-v2",  # Default to local model
+        embedding_model: str = "all-mpnet-base-v2",  # Default to local model
         alpha_vantage_api_key: Optional[str] = None,
         finmind_api_key: Optional[str] = None,  # 台灣股市資料 API
         market_type: str = "us",  # 市場類型：us (美股) 或 tw (台股)
@@ -143,7 +143,7 @@ class TradingService:
                 config["deep_think_api_key"] = deep_think_api_key if deep_think_api_key else openai_api_key
                 
                 # Embedding configuration: determine provider based on model name
-                local_embedding_models = ["all-MiniLM-L6-v2", "all-mpnet-base-v2"]
+                local_embedding_models = ["all-mpnet-base-v2"]
                 is_local_embedding = embedding_model in local_embedding_models
                 
                 if is_local_embedding:

@@ -19,7 +19,7 @@ class FinancialSituationMemory:
         Config options:
             embedding_provider: "local" (default) or "openai"
             embedding_model: Model name for the embedding provider
-                - For local: "all-MiniLM-L6-v2" (default), "all-mpnet-base-v2", etc.
+                - For local: "all-mpnet-base-v2" (default), etc.
                 - For OpenAI: "text-embedding-3-small" (default), "text-embedding-3-large", etc.
             embedding_base_url: Base URL for OpenAI-compatible API (only used when provider is "openai")
             embedding_api_key: API key for OpenAI (only used when provider is "openai")
@@ -46,8 +46,8 @@ class FinancialSituationMemory:
                 "Install it with: pip install sentence-transformers"
             )
         
-        # Default to all-MiniLM-L6-v2 - a lightweight and efficient model
-        model_name = config.get("embedding_model", "all-MiniLM-L6-v2")
+        # Default to all-mpnet-base-v2 - higher-quality general-purpose embeddings
+        model_name = config.get("embedding_model", "all-mpnet-base-v2")
         
         import logging
         
@@ -334,7 +334,7 @@ if __name__ == "__main__":
     # Example usage with local embedding (no API key required!)
     config = {
         "embedding_provider": "local",  # Use local model, no API key needed
-        "embedding_model": "all-MiniLM-L6-v2",  # Lightweight and efficient
+        "embedding_model": "all-mpnet-base-v2",  # Higher-quality general-purpose embeddings
     }
     
     matcher = FinancialSituationMemory("test_memory", config)

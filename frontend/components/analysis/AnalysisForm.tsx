@@ -115,7 +115,7 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
       market_type: "us", // 預設美股
       quick_think_llm: "claude-haiku-4-5-20251001",
       deep_think_llm: "claude-sonnet-5",
-      embedding_model: "all-MiniLM-L6-v2", // 預設使用本地開源模型
+      embedding_model: "all-mpnet-base-v2", // 預設使用本地開源模型
       custom_quick_think_model: "",
       custom_deep_think_model: "",
       quick_think_base_url: "https://api.anthropic.com/v1",
@@ -136,7 +136,7 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
   const marketType = form.watch("market_type");
   const isQuickThinkCustom = quickThinkLlm === "custom";
   const isDeepThinkCustom = deepThinkLlm === "custom";
-  const isLocalEmbedding = ["all-MiniLM-L6-v2", "all-mpnet-base-v2"].includes(embeddingModel);
+  const isLocalEmbedding = ["all-mpnet-base-v2"].includes(embeddingModel);
 
   useEffect(() => {
     // Use async version to get decrypted API keys
@@ -871,12 +871,6 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
                         </FormControl>
                         <SelectContent>
                           {/* 本地開源模型 (不需要 API Key) */}
-                          <SelectItem value="all-MiniLM-L6-v2">
-                            <div className="flex items-center gap-2">
-                              <Image src="/logos/huggingface-color.svg" alt="HuggingFace" width={16} height={16} className="shrink-0" />
-                              <span>all-MiniLM-L6-v2</span>
-                            </div>
-                          </SelectItem>
                           <SelectItem value="all-mpnet-base-v2">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/huggingface-color.svg" alt="HuggingFace" width={16} height={16} className="shrink-0" />
