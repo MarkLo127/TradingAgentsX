@@ -45,6 +45,77 @@
 
 ## 🏗️ 系統架構
 
+### 整體系統架構圖
+
+```mermaid
+flowchart TB
+    subgraph Client["🖥️ 使用者端（瀏覽器）"]
+        U["使用者"]
+        subgraph FE["Next.js 前端"]
+            direction LR
+            UI["分析表單 / 報告介面"]
+            CRYPTO["AES-GCM 加密<br/>API 金鑰"]
+            IDB["IndexedDB<br/>本地報告"]
+        end
+    end
+
+    subgraph Server["☁️ 後端服務（FastAPI）"]
+        API["REST API<br/>/api/analyze · /api/task · /api/download"]
+        RL["Rate Limiting<br/>安全中間件"]
+        TM["任務管理器<br/>Task Manager"]
+        TS["交易分析服務<br/>Trading Service"]
+        AUTH["Google OAuth<br/>JWT 認證"]
+    end
+
+    subgraph Core["🤖 AI 代理核心（LangGraph）"]
+        direction TB
+        P1["1️⃣ 分析階段<br/>市場 · 新聞 · 社群 · 基本面（並行）"]
+        P2["2️⃣ 研究辯論<br/>看漲 vs 看跌 → 研究經理"]
+        P3["3️⃣ 風險辯論<br/>激進 · 保守 · 中立 → 風險經理"]
+        P4["4️⃣ 交易決策<br/>BUY / SELL / HOLD"]
+        P1 --> P2 --> P3 --> P4
+        MEM[("ChromaDB<br/>記憶系統")]
+    end
+
+    subgraph Data["📊 資料來源"]
+        direction LR
+        YF["Yahoo Finance<br/>美股行情"]
+        AV["Alpha Vantage<br/>美股基本面"]
+        FM["FinMind<br/>台股資料"]
+        NEWS["Google News<br/>Reddit"]
+    end
+
+    subgraph LLM["🧠 LLM 提供商（BYOK）"]
+        direction LR
+        L1["OpenAI · Anthropic · Gemini"]
+        L2["Grok · DeepSeek · Qwen"]
+    end
+
+    subgraph Store["💾 儲存層"]
+        direction LR
+        PG[("PostgreSQL<br/>雲端同步")]
+        RD[("Redis<br/>結果快取 4h")]
+    end
+
+    U --> UI
+    UI <--> CRYPTO
+    UI <--> IDB
+    UI -->|HTTPS + JWT| API
+    API --> RL --> TM --> TS
+    API --> AUTH
+    TS --> P1
+    P4 -->|分析報告 / PDF| API
+    Core <--> Data
+    Core <--> LLM
+    P1 -.-> MEM
+    P2 -.-> MEM
+    TS <--> RD
+    AUTH <--> PG
+    TS <--> PG
+```
+
+### 專案結構
+
 ```
 TradingAgentsX/
 ├── frontend/                   # Next.js 前端應用

@@ -45,6 +45,77 @@
 
 ## 🏗️ System Architecture
 
+### Overall System Architecture Diagram
+
+```mermaid
+flowchart TB
+    subgraph Client["🖥️ Client (Browser)"]
+        U["User"]
+        subgraph FE["Next.js Frontend"]
+            direction LR
+            UI["Analysis Form / Report UI"]
+            CRYPTO["AES-GCM Encrypted<br/>API Keys"]
+            IDB["IndexedDB<br/>Local Reports"]
+        end
+    end
+
+    subgraph Server["☁️ Backend Service (FastAPI)"]
+        API["REST API<br/>/api/analyze · /api/task · /api/download"]
+        RL["Rate Limiting<br/>Security Middleware"]
+        TM["Task Manager"]
+        TS["Trading Service"]
+        AUTH["Google OAuth<br/>JWT Auth"]
+    end
+
+    subgraph Core["🤖 AI Agent Core (LangGraph)"]
+        direction TB
+        P1["1️⃣ Analysis Phase<br/>Market · News · Social · Fundamentals (parallel)"]
+        P2["2️⃣ Research Debate<br/>Bull vs Bear → Research Manager"]
+        P3["3️⃣ Risk Debate<br/>Aggressive · Conservative · Neutral → Risk Manager"]
+        P4["4️⃣ Trading Decision<br/>BUY / SELL / HOLD"]
+        P1 --> P2 --> P3 --> P4
+        MEM[("ChromaDB<br/>Memory System")]
+    end
+
+    subgraph Data["📊 Data Sources"]
+        direction LR
+        YF["Yahoo Finance<br/>US Quotes"]
+        AV["Alpha Vantage<br/>US Fundamentals"]
+        FM["FinMind<br/>Taiwan Stocks"]
+        NEWS["Google News<br/>Reddit"]
+    end
+
+    subgraph LLM["🧠 LLM Providers (BYOK)"]
+        direction LR
+        L1["OpenAI · Anthropic · Gemini"]
+        L2["Grok · DeepSeek · Qwen"]
+    end
+
+    subgraph Store["💾 Storage Layer"]
+        direction LR
+        PG[("PostgreSQL<br/>Cloud Sync")]
+        RD[("Redis<br/>Result Cache 4h")]
+    end
+
+    U --> UI
+    UI <--> CRYPTO
+    UI <--> IDB
+    UI -->|HTTPS + JWT| API
+    API --> RL --> TM --> TS
+    API --> AUTH
+    TS --> P1
+    P4 -->|Analysis Report / PDF| API
+    Core <--> Data
+    Core <--> LLM
+    P1 -.-> MEM
+    P2 -.-> MEM
+    TS <--> RD
+    AUTH <--> PG
+    TS <--> PG
+```
+
+### Project Structure
+
 ```
 TradingAgentsX/
 ├── frontend/                   # Next.js frontend application
