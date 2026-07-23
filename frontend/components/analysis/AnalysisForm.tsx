@@ -137,6 +137,7 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
   const isQuickThinkCustom = quickThinkLlm === "custom";
   const isDeepThinkCustom = deepThinkLlm === "custom";
   const isLocalEmbedding = ["all-mpnet-base-v2"].includes(embeddingModel);
+  const isGeminiEmbedding = embeddingModel.startsWith("gemini-embedding");
 
   useEffect(() => {
     // Use async version to get decrypted API keys
@@ -182,7 +183,14 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
       }
 
       // 本地模型不需要設定 API Key 和 Base URL
-      if (!isLocalEmbedding) {
+      if (isGeminiEmbedding) {
+        // Gemini 嵌入式模型：走 Gemini 的 OpenAI 相容端點，使用 Gemini API Key
+        form.setValue(
+          "embedding_base_url",
+          "https://generativelanguage.googleapis.com/v1beta/openai"
+        );
+        form.setValue("embedding_api_key", savedSettings.google_api_key);
+      } else if (!isLocalEmbedding) {
         form.setValue(
           "embedding_base_url",
           savedSettings.custom_base_url || "https://api.openai.com/v1"
@@ -204,7 +212,7 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
 
     loadSettings();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quickThinkLlm, deepThinkLlm, embeddingModel, isQuickThinkCustom, isDeepThinkCustom, isLocalEmbedding]);
+  }, [quickThinkLlm, deepThinkLlm, embeddingModel, isQuickThinkCustom, isDeepThinkCustom, isLocalEmbedding, isGeminiEmbedding]);
 
   // 當市場類型改變時，更新預設股票代碼和提示
   useEffect(() => {
@@ -920,9 +928,11 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
                         </SelectContent>
                       </Select>
                       <FormDescription>
-                        {isLocalEmbedding 
-                          ? t.form.localModelNoApiKey 
-                          : t.form.needsOpenAiApiKey}
+                        {isLocalEmbedding
+                          ? t.form.localModelNoApiKey
+                          : isGeminiEmbedding
+                            ? t.form.needsGeminiApiKey
+                            : t.form.needsOpenAiApiKey}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>

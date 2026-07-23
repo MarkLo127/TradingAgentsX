@@ -440,6 +440,7 @@ export const en = {
     complexReasoningModel: "Complex reasoning model",
     localModelNoApiKey: "🆓 Local model - No API Key needed",
     needsOpenAiApiKey: "☁️ Requires OpenAI API Key",
+    needsGeminiApiKey: "☁️ Requires Gemini API Key",
 
     // Depth levels
     depthShallow: "Shallow (1 round)",

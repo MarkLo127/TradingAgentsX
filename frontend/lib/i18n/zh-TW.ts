@@ -325,6 +325,7 @@ export const zhTW = {
     complexReasoningModel: "複雜推理模型",
     localModelNoApiKey: "🆓 本地模型不需 API Key",
     needsOpenAiApiKey: "☁️ 需要 OpenAI API Key",
+    needsGeminiApiKey: "☁️ 需要 Gemini API Key",
     
     // Depth levels
     depthShallow: "淺層 (1 輪)",
