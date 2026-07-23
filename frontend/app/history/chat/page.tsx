@@ -180,17 +180,17 @@ function HistoryChatContent() {
     try {
       const settings = await getApiSettingsAsync();
 
-      let chatModel = "claude-opus-4-8";
+      let chatModel = "claude-sonnet-5";
       let apiKey = "";
       let baseUrl = "https://api.anthropic.com/v1";
 
       const providers = {
-        anthropic: { key: settings.anthropic_api_key, defaultModel: "claude-opus-4-8" },
+        anthropic: { key: settings.anthropic_api_key, defaultModel: "claude-sonnet-5" },
         openai: { key: settings.openai_api_key, defaultModel: "gpt-5.6-terra" },
-        google: { key: settings.google_api_key, defaultModel: "gemini-3.5-flash-lite" },
-        grok: { key: settings.grok_api_key, defaultModel: "grok-3-mini" },
+        google: { key: settings.google_api_key, defaultModel: "gemini-3.5-flash" },
+        grok: { key: settings.grok_api_key, defaultModel: "grok-4.5" },
         deepseek: { key: settings.deepseek_api_key, defaultModel: "deepseek-v4-flash" },
-        qwen: { key: settings.qwen_api_key, defaultModel: "qwen-max" },
+        qwen: { key: settings.qwen_api_key, defaultModel: "qwen3.7-plus" },
       };
 
       const activeModelId = selectedModelId === "custom" ? customModel.trim() : selectedModelId;
