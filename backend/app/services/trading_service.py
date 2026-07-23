@@ -379,8 +379,9 @@ class TradingService:
             "claude-sonnet-5",
             "claude-haiku-4-5-20251001",
             # Google
+            "gemini-3.6-flash",
             "gemini-3.5-flash",
-            "gemini-3.1-flash-lite",
+            "gemini-3.5-flash-lite",
             # Grok
             "grok-4.5",
             "grok-4.3",

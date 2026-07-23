@@ -578,16 +578,22 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
                           </SelectItem>
 
                           {/* Google */}
+                          <SelectItem value="gemini-3.6-flash">
+                            <div className="flex items-center gap-2">
+                              <Image src="/logos/gemini-color.svg" alt="Gemini" width={16} height={16} className="shrink-0" />
+                              <span>Gemini 3.6 Flash</span>
+                            </div>
+                          </SelectItem>
                           <SelectItem value="gemini-3.5-flash">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/gemini-color.svg" alt="Gemini" width={16} height={16} className="shrink-0" />
                               <span>Gemini 3.5 Flash</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="gemini-3.1-flash-lite">
+                          <SelectItem value="gemini-3.5-flash-lite">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/gemini-color.svg" alt="Gemini" width={16} height={16} className="shrink-0" />
-                              <span>Gemini 3.1 Flash-Lite</span>
+                              <span>Gemini 3.5 Flash-Lite</span>
                             </div>
                           </SelectItem>
 
@@ -747,16 +753,22 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
                           </SelectItem>
 
                           {/* Google */}
+                          <SelectItem value="gemini-3.6-flash">
+                            <div className="flex items-center gap-2">
+                              <Image src="/logos/gemini-color.svg" alt="Gemini" width={16} height={16} className="shrink-0" />
+                              <span>Gemini 3.6 Flash</span>
+                            </div>
+                          </SelectItem>
                           <SelectItem value="gemini-3.5-flash">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/gemini-color.svg" alt="Gemini" width={16} height={16} className="shrink-0" />
                               <span>Gemini 3.5 Flash</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="gemini-3.1-flash-lite">
+                          <SelectItem value="gemini-3.5-flash-lite">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/gemini-color.svg" alt="Gemini" width={16} height={16} className="shrink-0" />
-                              <span>Gemini 3.1 Flash-Lite</span>
+                              <span>Gemini 3.5 Flash-Lite</span>
                             </div>
                           </SelectItem>
 
@@ -889,6 +901,20 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
                             <div className="flex items-center gap-2">
                               <Image src="/logos/openai.svg" alt="OpenAI" width={16} height={16} className="shrink-0" />
                               <span>text-embedding-3-large</span>
+                            </div>
+                          </SelectItem>
+
+                          {/* Google API 模型 (需要 API Key) */}
+                          <SelectItem value="gemini-embedding-2">
+                            <div className="flex items-center gap-2">
+                              <Image src="/logos/gemini-color.svg" alt="Gemini" width={16} height={16} className="shrink-0" />
+                              <span>gemini-embedding-2</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="gemini-embedding-001">
+                            <div className="flex items-center gap-2">
+                              <Image src="/logos/gemini-color.svg" alt="Gemini" width={16} height={16} className="shrink-0" />
+                              <span>gemini-embedding-001</span>
                             </div>
                           </SelectItem>
                         </SelectContent>

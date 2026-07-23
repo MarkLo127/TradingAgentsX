@@ -53,8 +53,9 @@ const AVAILABLE_MODELS = [
   { id: "claude-haiku-4-5-20251001", name: "Claude Haiku 4.5", provider: "anthropic", logo: "/logos/claude-color.svg" },
 
   // Google
+  { id: "gemini-3.6-flash", name: "Gemini 3.6 Flash", provider: "google", logo: "/logos/gemini-color.svg" },
   { id: "gemini-3.5-flash", name: "Gemini 3.5 Flash", provider: "google", logo: "/logos/gemini-color.svg" },
-  { id: "gemini-3.1-flash-lite", name: "Gemini 3.1 Flash-Lite", provider: "google", logo: "/logos/gemini-color.svg" },
+  { id: "gemini-3.5-flash-lite", name: "Gemini 3.5 Flash-Lite", provider: "google", logo: "/logos/gemini-color.svg" },
 
   // Grok
   { id: "grok-4.5", name: "Grok 4.5", provider: "grok", logo: "/logos/grok.svg" },
@@ -186,7 +187,7 @@ function HistoryChatContent() {
       const providers = {
         anthropic: { key: settings.anthropic_api_key, defaultModel: "claude-opus-4-8" },
         openai: { key: settings.openai_api_key, defaultModel: "gpt-5.6-terra" },
-        google: { key: settings.google_api_key, defaultModel: "gemini-3.1-flash-lite" },
+        google: { key: settings.google_api_key, defaultModel: "gemini-3.5-flash-lite" },
         grok: { key: settings.grok_api_key, defaultModel: "grok-3-mini" },
         deepseek: { key: settings.deepseek_api_key, defaultModel: "deepseek-v4-flash" },
         qwen: { key: settings.qwen_api_key, defaultModel: "qwen-max" },

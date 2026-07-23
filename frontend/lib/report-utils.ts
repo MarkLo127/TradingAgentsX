@@ -78,8 +78,9 @@ const MODEL_DISPLAY_NAMES: Record<string, string> = {
   "claude-haiku-4-5-20251001": "Claude Haiku 4.5",
 
   // Google Gemini
+  "gemini-3.6-flash": "Gemini 3.6 Flash",
   "gemini-3.5-flash": "Gemini 3.5 Flash",
-  "gemini-3.1-flash-lite": "Gemini 3.1 Flash-Lite",
+  "gemini-3.5-flash-lite": "Gemini 3.5 Flash-Lite",
   
   // OpenAI
   "gpt-5.6-sol": "GPT-5.6 Sol",

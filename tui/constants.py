@@ -75,8 +75,9 @@ MODEL_OPTIONS = {
         ("Claude Haiku 4.5", "claude-haiku-4-5-20251001"),
     ],
     "Google": [
+        ("Gemini 3.6 Flash", "gemini-3.6-flash"),
         ("Gemini 3.5 Flash", "gemini-3.5-flash"),
-        ("Gemini 3.1 Flash-Lite", "gemini-3.1-flash-lite"),
+        ("Gemini 3.5 Flash-Lite", "gemini-3.5-flash-lite"),
     ],
     "Grok": [
         ("Grok 4.5", "grok-4.5"),
@@ -103,6 +104,7 @@ MODEL_OPTIONS = {
 EMBEDDING_PROVIDERS = [
     ("🖥️  本地模型 (HuggingFace) - 免費", "local"),
     ("☁️  OpenAI - 收費", "https://api.openai.com/v1"),
+    ("☁️  Google Gemini - 收費", "https://generativelanguage.googleapis.com/v1beta/openai"),
 ]
 
 LOCAL_EMBEDDING_MODELS = [
@@ -114,11 +116,18 @@ OPENAI_EMBEDDING_MODELS = [
     ("text-embedding-3-large - 最高質量", "text-embedding-3-large"),
 ]
 
+GEMINI_EMBEDDING_MODELS = [
+    ("gemini-embedding-2 (推薦) - 最新", "gemini-embedding-2"),
+    ("gemini-embedding-001", "gemini-embedding-001"),
+]
+
 
 def embedding_models_for(embedding_url: str):
     """根據嵌入供應商的 URL 回傳對應的模型清單。"""
     if embedding_url == "local":
         return LOCAL_EMBEDDING_MODELS
+    if "googleapis.com" in embedding_url:
+        return GEMINI_EMBEDDING_MODELS
     return OPENAI_EMBEDDING_MODELS
 
 
