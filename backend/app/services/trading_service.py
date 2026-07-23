@@ -186,8 +186,31 @@ class TradingService:
                     # 儲存市場類型供 price_service 使用
                     config["market_type"] = market_type
                 else:
-                    # 美股：維持原有邏輯（不修改 data_vendors 和 tool_vendors）
-                    logger.info(f"Market type: US stocks - using default data providers")
+                    # 美股：依使用者是否持有有效的 OpenAI Key 動態決定新聞供應商
+                    # （避免沒有 OpenAI Key 的 BYOK 使用者每次新聞查詢都先 401 再 fallback）
+                    # 注意：config 為 default_config 的淺拷貝，nested dict 為共用參考，
+                    #       因此一律以「整份重建」方式賦值，切勿就地 mutate。
+                    has_valid_openai_key = bool(openai_api_key and openai_api_key.strip())
+                    if has_valid_openai_key:
+                        # 有 OpenAI Key：使用 OpenAI 具網路搜尋能力的即時新聞（覆寫全域預設）
+                        config["data_vendors"] = {
+                            **config["data_vendors"],
+                            "news_data": "openai",
+                        }
+                        config["tool_vendors"] = {
+                            **config.get("tool_vendors", {}),
+                            "get_global_news": "openai",
+                        }
+                        logger.info("Market type: US stocks - valid OpenAI key present, using OpenAI news providers")
+                    else:
+                        # 無有效 OpenAI Key：新聞避開 openai
+                        #   get_news      → 沿用全域預設 alpha_vantage
+                        #   get_global_news → 不支援 alpha_vantage，改用 local(Reddit 全球新聞)
+                        config["tool_vendors"] = {
+                            **config.get("tool_vendors", {}),
+                            "get_global_news": "local",
+                        }
+                        logger.info("Market type: US stocks - no valid OpenAI key, routing news away from OpenAI (get_news→alpha_vantage, get_global_news→local)")
                 
                 # Set language for agent reports
                 config["language"] = language

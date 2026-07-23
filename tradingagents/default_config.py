@@ -30,7 +30,7 @@ DEFAULT_CONFIG = {
         "core_stock_apis": "yfinance",       # 選項: yfinance, alpha_vantage, finmind, local
         "technical_indicators": "yfinance",  # 選項: yfinance, alpha_vantage, finmind, local
         "fundamental_data": "alpha_vantage", # 選項: openai, alpha_vantage, yfinance, finmind
-        "news_data": "openai",               # 選項: openai, alpha_vantage, google, finmind, local
+        "news_data": "alpha_vantage",        # 選項: openai, alpha_vantage, google, finmind, local
     },
     # 工具層級設定 (優先於類別層級設定)
     "tool_vendors": {
