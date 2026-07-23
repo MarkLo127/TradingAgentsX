@@ -240,11 +240,18 @@ class HybridTaskManager:
         if not task:
             return None
         
+        # created_at / updated_at are required (non-null) str fields on
+        # TaskStatusResponse. Fall back defensively so an older/partial task
+        # record can never make the status endpoint fail validation.
+        now_iso = datetime.now().isoformat()
+        created_at = task.get("created_at") or now_iso
+        updated_at = task.get("updated_at") or created_at
+
         return {
             "task_id": task["task_id"],
             "status": task["status"],
-            "created_at": task.get("created_at"),
-            "updated_at": task.get("updated_at", task.get("created_at")),
+            "created_at": created_at,
+            "updated_at": updated_at,
             "progress": task.get("progress"),
             "result": task.get("result"),
             "error": task.get("error"),

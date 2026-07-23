@@ -4,6 +4,7 @@ FastAPI application entry point for TradingAgentsX Backend
 from fastapi import FastAPI, Request # type: ignore
 from fastapi.responses import JSONResponse # type: ignore
 from starlette.middleware.base import BaseHTTPMiddleware # type: ignore
+from pydantic import ValidationError # type: ignore
 import logging
 import sys
 import time
@@ -189,7 +190,13 @@ async def global_exception_handler(request: Request, exc: Exception):
     error_type = type(exc).__name__
     status_code = 500
 
-    if isinstance(exc, ValueError):
+    # pydantic ValidationError subclasses ValueError, but it means we failed to
+    # serialize/validate our OWN response (a server bug), NOT bad client input.
+    # Must be checked before ValueError so it isn't mislabeled as a 400 — that
+    # previously turned response-model failures into an endless 400 poll loop.
+    if isinstance(exc, ValidationError):
+        status_code = 500
+    elif isinstance(exc, ValueError):
         status_code = 400
     elif isinstance(exc, (ConnectionError, ConnectionRefusedError, TimeoutError)):
         status_code = 503

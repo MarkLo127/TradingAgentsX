@@ -19,12 +19,24 @@ export function useAnalysis() {
   const [taskId, setTaskId] = useState<string | null>(null);
   const [progress, setProgress] = useState<string | null>(null);
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  // Count consecutive transient failures (network / 5xx) so we can give up
+  // instead of polling a dead backend forever. Reset on any successful poll.
+  const consecutiveErrorsRef = useRef(0);
+  const MAX_CONSECUTIVE_ERRORS = 10; // ~30s at a 3s interval
+
+  const stopPolling = () => {
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+  };
 
   // Poll for task status
   const pollTaskStatus = async (id: string) => {
     try {
       const status = await api.getTaskStatus(id);
-      
+      consecutiveErrorsRef.current = 0; // got a valid response
+
       // Update progress
       if (status.progress) {
         setProgress(status.progress);
@@ -52,14 +64,10 @@ export function useAnalysis() {
           console.warn("Redis cleanup failed (will auto-expire):", cleanupErr);
         }
         
-        // Stop polling
-        if (pollingIntervalRef.current) {
-          clearInterval(pollingIntervalRef.current);
-          pollingIntervalRef.current = null;
-        }
+        stopPolling();
         return true;
       }
-      
+
       // Check if failed
       if (status.status === "failed") {
         // Check if we have structured error data from result
@@ -88,18 +96,43 @@ export function useAnalysis() {
           console.warn("Redis cleanup failed (will auto-expire):", cleanupErr);
         }
         
-        // Stop polling
-        if (pollingIntervalRef.current) {
-          clearInterval(pollingIntervalRef.current);
-          pollingIntervalRef.current = null;
-        }
+        stopPolling();
         return true;
       }
-      
+
       return false; // Still running
     } catch (err: any) {
       console.error("Error polling task status:", err);
-      // Don't stop polling on temporary errors
+
+      const httpStatus: number | undefined = err?.response?.status;
+
+      // Permanent client errors (400/404/etc): the task is gone or the request
+      // is invalid — retrying will never succeed, so stop and surface it instead
+      // of hammering the backend forever.
+      if (typeof httpStatus === "number" && httpStatus >= 400 && httpStatus < 500) {
+        const detail =
+          err?.response?.data?.detail ||
+          err?.response?.data?.error ||
+          (httpStatus === 404
+            ? "Analysis task not found or expired"
+            : `Analysis request failed (${httpStatus})`);
+        setError(detail);
+        setLoading(false);
+        setProgress(null);
+        stopPolling();
+        return true;
+      }
+
+      // Transient errors (network blips, 5xx): keep polling, but give up after
+      // too many consecutive failures so we don't poll a dead backend forever.
+      consecutiveErrorsRef.current += 1;
+      if (consecutiveErrorsRef.current >= MAX_CONSECUTIVE_ERRORS) {
+        setError("Lost connection to the analysis service. Please try again.");
+        setLoading(false);
+        setProgress(null);
+        stopPolling();
+        return true;
+      }
       return false;
     }
   };
@@ -110,7 +143,8 @@ export function useAnalysis() {
     if (pollingIntervalRef.current) {
       clearInterval(pollingIntervalRef.current);
     }
-    
+    consecutiveErrorsRef.current = 0;
+
     // Poll every 3 seconds
     pollingIntervalRef.current = setInterval(async () => {
       await pollTaskStatus(id);

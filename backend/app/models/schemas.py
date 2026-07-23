@@ -147,7 +147,11 @@ class TaskStatusResponse(BaseModel):
     created_at: str = Field(..., description="Task creation timestamp")
     updated_at: str = Field(..., description="Last update timestamp")
     progress: Optional[str] = Field(None, description="Progress message")
-    result: Optional[AnalysisResponse] = Field(None, description="Analysis result (only when completed)")
+    # Union fallback: pydantic validates against AnalysisResponse first (typed,
+    # documented happy path); if the stored result dict doesn't perfectly match
+    # the strict nested models (e.g. PriceData/PriceStats), it falls back to a
+    # plain dict instead of raising — the payload is still returned to the client.
+    result: Optional[Union[AnalysisResponse, Dict[str, Any]]] = Field(None, description="Analysis result (only when completed)")
     error: Optional[str] = Field(None, description="Error message (only when failed)")
     completed_at: Optional[str] = Field(None, description="Completion timestamp")
 
