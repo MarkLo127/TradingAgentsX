@@ -3,7 +3,12 @@ import os
 DEFAULT_CONFIG = {
     "project_dir": os.path.abspath(os.path.join(os.path.dirname(__file__), ".")),
     "results_dir": os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "results")),
-    "data_dir": os.path.join(os.path.expanduser("~"), "Documents/Code/ScAI/FR1-data"),
+    # 本地資料目錄（Reddit/SimFin/Finnhub 等本地檔案）。預設沿用開發路徑，
+    # 部署環境可用 TRADINGAGENTS_DATA_DIR 覆寫指向真實路徑。
+    "data_dir": os.getenv(
+        "TRADINGAGENTS_DATA_DIR",
+        os.path.join(os.path.expanduser("~"), "Documents/Code/ScAI/FR1-data"),
+    ),
     "data_cache_dir": os.getenv("TRADINGAGENTS_DATA_CACHE_DIR", os.path.join(
         os.path.abspath(os.path.join(os.path.dirname(__file__), ".")),
         "dataflows/data_cache",

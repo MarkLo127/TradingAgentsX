@@ -129,7 +129,9 @@ VENDOR_METHODS = {
     },
     "get_global_news": {
         "openai": get_global_news_openai,
-        "local": get_reddit_global_news,
+        # 已移除 "local": get_reddit_global_news —
+        # 它依賴本地 Reddit 資料目錄（部署環境不存在），每次都回空結果卻仍「成功」，
+        # 導致備援鏈提早停止、全球新聞實質關閉。移除後改由 openai / finmind 提供。
         "finmind": get_finmind_global_news,  # 台股市場動態
     },
     "get_insider_sentiment": {

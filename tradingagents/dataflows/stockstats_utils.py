@@ -101,4 +101,12 @@ class StockstatsUtils:
             indicator_value = matching_rows[indicator].values[0]
             return indicator_value
         else:
-            return "N/A：非交易日 (週末或假日)"
+            # 區分「真的是週末」與「平日卻無值」（假日、尚未上市或資料不足），
+            # 避免把平日交易日誤標為週末假日。
+            try:
+                is_weekend = datetime.strptime(curr_date, "%Y-%m-%d").weekday() >= 5
+            except Exception:
+                is_weekend = False
+            if is_weekend:
+                return "N/A：非交易日 (週末)"
+            return "N/A：無資料 (假日、個股尚未上市，或歷史資料不足以計算此指標)"

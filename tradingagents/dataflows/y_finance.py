@@ -190,8 +190,13 @@ def get_stock_stats_indicators_window(
             # 查找此日期的指標值
             if date_str in indicator_data:
                 indicator_value = indicator_data[date_str]
+            elif current_dt.weekday() >= 5:
+                # 週六(5)/週日(6)：確實為非交易日
+                indicator_value = "N/A：非交易日 (週末)"
             else:
-                indicator_value = "N/A：非交易日 (週末或假日)"
+                # 平日卻無值：可能為假日、個股尚未上市，或歷史資料不足以計算此指標
+                # （例如剛 IPO 的新股無法計算 200 日均線）。不可誤標為「週末假日」。
+                indicator_value = "N/A：無資料 (假日、個股尚未上市，或歷史資料不足以計算此指標)"
             
             date_values.append((date_str, indicator_value))
             current_dt = current_dt - relativedelta(days=1)

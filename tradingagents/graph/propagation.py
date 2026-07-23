@@ -48,19 +48,35 @@ class Propagator:
         ticker = company_name  # company_name實際上是ticker
         actual_company_name = ticker  # 預設值為ticker
         
+        # 1) 優先從 fundamentals 供應商（如 Alpha Vantage）取得公司全名
         try:
-            # 嘗試從fundamentals數據中獲取公司全名
             fundamentals_data = route_to_vendor("get_fundamentals", ticker, trade_date)
             if fundamentals_data:
                 # 解析JSON數據
                 data = json.loads(fundamentals_data) if isinstance(fundamentals_data, str) else fundamentals_data
-                if isinstance(data, dict) and "Name" in data:
+                if isinstance(data, dict) and data.get("Name"):
                     actual_company_name = data["Name"]
                     print(f"成功獲取公司名稱：{ticker} -> {actual_company_name}")
-                else:
-                    print(f"警告：無法從fundamentals數據中提取公司名稱，使用ticker: {ticker}")
         except Exception as e:
-            print(f"警告：獲取公司名稱時發生錯誤：{e}，使用ticker: {ticker}")
+            # 常見於剛 IPO 的新股：fundamentals 供應商尚未收錄，回應為空 → JSON 解析失敗。
+            # 不視為錯誤，改用 yfinance 備援。
+            print(f"提示：fundamentals 未提供 {ticker} 的公司名稱（{e}），改用 yfinance 備援")
+
+        # 2) 若仍為裸代碼，退回 yfinance 的 longName/shortName。
+        #    yfinance 通常在 IPO 當天即有資料，可避免下游 agent 因缺公司名而
+        #    從代碼字母「猜」成另一家公司（例如 SKHY 被誤認為 Sky Harbour / SKYH）。
+        if actual_company_name == ticker:
+            try:
+                import yfinance as yf
+                info = yf.Ticker(ticker).info or {}
+                yf_name = info.get("longName") or info.get("shortName")
+                if yf_name:
+                    actual_company_name = yf_name
+                    print(f"成功從 yfinance 獲取公司名稱：{ticker} -> {actual_company_name}")
+                else:
+                    print(f"警告：yfinance 亦無 {ticker} 公司名稱，使用 ticker 作為名稱")
+            except Exception as e:
+                print(f"警告：yfinance 獲取 {ticker} 公司名稱失敗（{e}），使用 ticker 作為名稱")
         
         return {
             "messages": [("human", ticker)],  # 初始訊息，觸發第一個代理
