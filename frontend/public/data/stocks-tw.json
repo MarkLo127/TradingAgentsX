@@ -19,18 +19,8 @@
   ["2395", "研華", "Advantech Co., Ltd.", "twse"],
   ["0050", "元大台灣50", "Yuanta Taiwan Top 50 ETF", "twse"],
   ["0056", "元大高股息", "Yuanta Taiwan Dividend Plus ETF", "twse"],
-  [
-    "00878",
-    "國泰永續高股息",
-    "Cathay Sustainability High Dividend ETF",
-    "twse"
-  ],
-  [
-    "00919",
-    "群益台灣精選高息",
-    "Capital Taiwan Select High Dividend ETF",
-    "twse"
-  ],
+  ["00878", "國泰永續高股息", "Cathay Sustainability High Dividend ETF", "twse"],
+  ["00919", "群益台灣精選高息", "Capital Taiwan Select High Dividend ETF", "twse"],
   ["2207", "和泰車", "Hotai Motor Co., Ltd.", "twse"],
   ["1216", "統一", "Uni-President Enterprises Corp.", "twse"],
   ["2912", "統一超", "President Chain Store Corp.", "twse"],
@@ -3092,6 +3082,7 @@
   ["9958", "世紀鋼", "CIS", "twse"],
   ["9960", "邁達康", "DACOME", "tpex"],
   ["9962", "有益", "YYS", "tpex"],
+  ["7835", "永悅健康-創", "H2U", "twse"],
   ["Cement", "水泥類指數", "", "twse"],
   ["Food", "食品類指數", "", "twse"],
   ["Other", "其他類指數", "", "twse"],
