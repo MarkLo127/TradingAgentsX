@@ -503,6 +503,47 @@ export const en = {
     notSelectedOrNoReport:
       "Analyst may not have been selected or did not produce a report",
 
+    // Verdict banner
+    verdict: {
+      label: "Final Call",
+      noConfidence: "No parsable confidence value in the report",
+      confidence: "Confidence",
+      analystCount: "Analysts",
+      analystCountUnit: "",
+      periodChange: "Period Change",
+      undecided: "N/A",
+    },
+
+    // On-page sections (single-page report layout)
+    sections: {
+      bullBearDebate: "Bull vs. Bear Debate",
+      riskDebate: "Risk Debate",
+      fullReport: "Full Report",
+      expand: "Expand",
+      collapse: "Collapse",
+      empty: "Not generated",
+    },
+
+    // Short role labels used on the debate cards
+    roles: {
+      bull: "Bull Researcher",
+      bear: "Bear Researcher",
+      aggressive: "Aggressive",
+      conservative: "Conservative",
+      neutral: "Neutral",
+    },
+
+    // Full-report section labels
+    reportSections: {
+      trader: "Trader Verdict",
+      riskDecision: "Risk Decision",
+      investmentPlan: "Investment Plan",
+      technical: "Technical",
+      fundamental: "Fundamentals",
+      news: "News",
+      social: "Social Sentiment",
+    },
+
     // Analyst tabs
     analysts: {
       market: "Market Analyst",

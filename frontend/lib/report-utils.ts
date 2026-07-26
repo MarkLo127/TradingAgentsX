@@ -126,3 +126,207 @@ export function parseUTCDate(dateStr: string): Date {
   // Otherwise, append 'Z' to treat as UTC
   return new Date(dateStr + "Z");
 }
+
+/** Normalized trading signal, independent of the language the report was written in. */
+export type DecisionSignal = "buy" | "sell" | "hold" | "unknown";
+
+export interface ExtractedDecision {
+  /** Label as it appeared in the report (e.g. "賣出" or "SELL"). */
+  action: string;
+  signal: DecisionSignal;
+  /** Tailwind text colour, kept for callers that render the label inline. */
+  color: string;
+}
+
+/**
+ * Minimal shape the decision/confidence extractors need. Deliberately structural
+ * so both `AnalysisResponse` and stored report payloads satisfy it.
+ */
+export interface DecisionSource {
+  decision?: { action?: string; confidence?: number } | null;
+  reports?: {
+    trader_investment_plan?: string;
+    final_trade_decision?: string;
+    market_report?: string;
+    sentiment_report?: string;
+    news_report?: string;
+    fundamentals_report?: string;
+    risk_debate_state?: { judge_decision?: string } | null;
+  } | null;
+}
+
+const SIGNAL_COLORS: Record<DecisionSignal, string> = {
+  buy: "text-green-600",
+  sell: "text-red-600",
+  hold: "text-yellow-600",
+  unknown: "text-gray-500",
+};
+
+function decision(action: string, signal: DecisionSignal): ExtractedDecision {
+  return { action, signal, color: SIGNAL_COLORS[signal] };
+}
+
+/**
+ * Match an explicit "最終交易提案：X" / "Final Trading Proposal: X" statement.
+ * Reports repeat the phrase, so the LAST match is the binding one.
+ */
+function findFinalProposal(text: unknown): ExtractedDecision | null {
+  if (!text || typeof text !== "string") return null;
+
+  const zhMatches = [
+    ...text.matchAll(/\*{0,2}最終交易提案[：:]\s*\*{0,2}(買入|賣出|持有)\*{0,2}/g),
+  ];
+  if (zhMatches.length > 0) {
+    const found = zhMatches[zhMatches.length - 1][1];
+    if (found === "買入") return decision("買入", "buy");
+    if (found === "賣出") return decision("賣出", "sell");
+    if (found === "持有") return decision("持有", "hold");
+  }
+
+  const enMatches = [
+    ...text.matchAll(
+      /\*{0,2}Final Trading Proposal\*{0,2}[：:]\s*\*{0,2}(BUY|SELL|HOLD)\*{0,2}/gi,
+    ),
+  ];
+  if (enMatches.length > 0) {
+    const found = enMatches[enMatches.length - 1][1].toUpperCase();
+    if (found === "BUY") return decision("BUY", "buy");
+    if (found === "SELL") return decision("SELL", "sell");
+    if (found === "HOLD") return decision("HOLD", "hold");
+  }
+
+  return null;
+}
+
+/** Looser fallback for reports that phrase the call as 最終決策/最終建議/recommendation. */
+function findOtherDecision(text: unknown): ExtractedDecision | null {
+  if (!text || typeof text !== "string") return null;
+
+  const zhMatch = text.match(/最終(?:決策|建議)[：:]\s*(買入|賣出|持有)/);
+  if (zhMatch) {
+    if (zhMatch[1] === "買入") return decision("買入", "buy");
+    if (zhMatch[1] === "賣出") return decision("賣出", "sell");
+    if (zhMatch[1] === "持有") return decision("持有", "hold");
+  }
+
+  if (/(?:final|recommendation|decision)[:\s]*(buy|long)/i.test(text))
+    return decision("買入", "buy");
+  if (/(?:final|recommendation|decision)[:\s]*(sell|short)/i.test(text))
+    return decision("賣出", "sell");
+  if (/(?:final|recommendation|decision)[:\s]*(hold)/i.test(text))
+    return decision("持有", "hold");
+
+  return null;
+}
+
+/**
+ * Resolve the final BUY/SELL/HOLD call for an analysis result.
+ * Priority: trader plan → final_trade_decision → risk manager → decision.action → analyst reports.
+ */
+export function extractDecisionFromResult(
+  result: DecisionSource | null | undefined,
+): ExtractedDecision {
+  const reports = result?.reports;
+
+  const fromTrader = findFinalProposal(reports?.trader_investment_plan);
+  if (fromTrader) return fromTrader;
+
+  const finalTrade = reports?.final_trade_decision;
+  if (finalTrade) {
+    const found = findFinalProposal(finalTrade) || findOtherDecision(finalTrade);
+    if (found) return found;
+  }
+
+  const riskJudge = reports?.risk_debate_state?.judge_decision;
+  if (riskJudge) {
+    const found = findOtherDecision(riskJudge);
+    if (found) return found;
+  }
+
+  const action = result?.decision?.action;
+  if (typeof action === "string" && action) {
+    const lower = action.toLowerCase();
+    const signal: DecisionSignal = lower.includes("buy")
+      ? "buy"
+      : lower.includes("sell")
+        ? "sell"
+        : "hold";
+    return decision(action, signal);
+  }
+
+  for (const text of [
+    reports?.market_report,
+    reports?.sentiment_report,
+    reports?.news_report,
+    reports?.fundamentals_report,
+  ]) {
+    const found = findFinalProposal(text);
+    if (found) return found;
+  }
+
+  return decision("N/A", "unknown");
+}
+
+/**
+ * Resolve a 0–1 confidence score, either from the structured decision field
+ * or from a "信心度：85%" / "confidence: 85%" statement in the trader plan.
+ * Returns null when the report contains no parsable value.
+ */
+export function extractConfidence(
+  result: DecisionSource | null | undefined,
+): number | null {
+  const raw = result?.decision?.confidence;
+  if (typeof raw === "number" && Number.isFinite(raw)) {
+    // Backend has used both 0–1 and 0–100 at different times.
+    return raw > 1 ? Math.min(raw / 100, 1) : Math.max(raw, 0);
+  }
+
+  const sources = [
+    result?.reports?.trader_investment_plan,
+    result?.reports?.final_trade_decision,
+    result?.reports?.risk_debate_state?.judge_decision,
+  ];
+  for (const text of sources) {
+    if (!text || typeof text !== "string") continue;
+    const match = text.match(
+      /(?:信心度|信心水準|把握度|confidence)\D{0,12}?(\d{1,3}(?:\.\d+)?)\s*%/i,
+    );
+    if (match) {
+      const pct = parseFloat(match[1]);
+      if (Number.isFinite(pct)) return Math.min(Math.max(pct / 100, 0), 1);
+    }
+  }
+
+  return null;
+}
+
+/** Debate-round prefixes emitted by the agents, in both supported languages. */
+const DEBATE_ROUND_PREFIXES = [
+  "看漲分析師：",
+  "看跌分析師：",
+  "激進分析師：",
+  "保守分析師：",
+  "中立分析師：",
+  "Bull Analyst: ",
+  "Bear Analyst: ",
+  "Aggressive Analyst: ",
+  "Conservative Analyst: ",
+  "Neutral Analyst: ",
+];
+
+/**
+ * Keep only the final round of a multi-round debate history.
+ * Earlier rounds restate the same arguments and make the cards unreadable.
+ */
+export function extractLastDebateRound(history: string): string {
+  if (!history) return history;
+
+  let lastIndex = -1;
+  for (const prefix of DEBATE_ROUND_PREFIXES) {
+    const idx = history.lastIndexOf("\n" + prefix);
+    if (idx > lastIndex) lastIndex = idx;
+  }
+
+  if (lastIndex === -1) return history.trimStart();
+  return history.slice(lastIndex + 1); // skip the leading \n
+}

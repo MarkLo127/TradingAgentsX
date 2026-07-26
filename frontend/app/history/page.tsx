@@ -53,7 +53,10 @@ import {
   saveCloudReport,
   isCloudSyncEnabled,
 } from "@/lib/user-api";
-import { getModelDisplayName } from "@/lib/report-utils";
+import {
+  extractDecisionFromResult,
+  getModelDisplayName,
+} from "@/lib/report-utils";
 // import { LoginPrompt } from "@/components/auth/login-button";
 import { PendingTaskRecovery } from "@/components/PendingTaskRecovery";
 
@@ -146,175 +149,11 @@ const getMarketLabels = (t: ReturnType<typeof useLanguage>["t"]) => ({
   },
 });
 
-// Helper function to extract decision from Risk Manager's final decision
+// Decision extraction lives in report-utils so the history list and the report
+// page always agree on the final call. Kept as a local alias for readability.
 const extractDecisionFromReport = (
   report: SavedReport,
-): { action: string; color: string } => {
-  // DEBUG: Log the actual data structure to diagnose issues
-  console.log("📊 DEBUG extractDecisionFromReport for:", report.ticker);
-  console.log("  - result type:", typeof report.result);
-  console.log("  - result.reports exists:", !!report.result?.reports);
-  console.log(
-    "  - trader_investment_plan exists:",
-    !!report.result?.reports?.trader_investment_plan,
-  );
-  console.log("  - decision.action exists:", !!report.result?.decision?.action);
-
-  if (report.result?.reports?.trader_investment_plan) {
-    const traderText = report.result.reports.trader_investment_plan;
-    console.log("  - trader_investment_plan type:", typeof traderText);
-    console.log("  - trader_investment_plan length:", traderText.length);
-    // Show last 150 chars to see the final decision
-    console.log("  - last 150 chars:", traderText.slice(-150));
-    // Check if it contains the key phrase
-    const hasProposal = traderText.includes("最終交易提案");
-    console.log("  - contains '最終交易提案':", hasProposal);
-  } else {
-    console.log("  - trader_investment_plan is NULL or undefined");
-  }
-  // Helper function to find "最終交易提案" or "Final Trading Proposal"
-  const findFinalProposal = (
-    text: string,
-  ): { action: string; color: string } | null => {
-    if (!text || typeof text !== "string") return null;
-
-    // === CHINESE PATTERN ===
-    // Match "最終交易提案：持有" - handle markdown ** bold markers
-    // Pattern handles: 最終交易提案：持有, 最終交易提案：**持有**, **最終交易提案：持有**
-    // Use global flag to find ALL matches, then take the LAST one (final decision)
-    const zhRegex =
-      /\*{0,2}最終交易提案[：:]\s*\*{0,2}(買入|賣出|持有)\*{0,2}/g;
-    const zhMatches = [...text.matchAll(zhRegex)];
-
-    if (zhMatches.length > 0) {
-      // Take the LAST match (the final decision at the end of the report)
-      const lastMatch = zhMatches[zhMatches.length - 1];
-      const decision = lastMatch[1];
-      console.log(
-        `  ✅ Matched ZH pattern: "${lastMatch[0]}" -> decision: "${decision}"`,
-      );
-      if (decision === "買入")
-        return { action: "買入", color: "text-green-600" };
-      if (decision === "賣出") return { action: "賣出", color: "text-red-600" };
-      if (decision === "持有")
-        return { action: "持有", color: "text-yellow-600" };
-    }
-
-    // === ENGLISH PATTERN ===
-    // Match "Final Trading Proposal: BUY/SELL/HOLD" - handle markdown ** bold markers
-    // Pattern handles: Final Trading Proposal: Buy, **Final Trading Proposal**: Hold, etc.
-    const enRegex =
-      /\*{0,2}Final Trading Proposal\*{0,2}[：:]\s*\*{0,2}(BUY|SELL|HOLD|Buy|Sell|Hold)\*{0,2}/gi;
-    const enMatches = [...text.matchAll(enRegex)];
-
-    if (enMatches.length > 0) {
-      const lastMatch = enMatches[enMatches.length - 1];
-      const decision = lastMatch[1].toUpperCase();
-      console.log(
-        `  ✅ Matched EN pattern: "${lastMatch[0]}" -> decision: "${decision}"`,
-      );
-      if (decision === "BUY") return { action: "BUY", color: "text-green-600" };
-      if (decision === "SELL") return { action: "SELL", color: "text-red-600" };
-      if (decision === "HOLD")
-        return { action: "HOLD", color: "text-yellow-600" };
-    }
-
-    return null;
-  };
-
-  // Helper function to find other decision patterns
-  const findOtherDecision = (
-    text: string,
-  ): { action: string; color: string } | null => {
-    if (!text || typeof text !== "string") return null;
-
-    const lowerText = text.toLowerCase();
-
-    // Look for "最終決策" or "最終建議"
-    const finalDecisionMatch = text.match(
-      /最終(?:決策|建議)[：:]\s*(買入|賣出|持有)/,
-    );
-    if (finalDecisionMatch) {
-      const decision = finalDecisionMatch[1];
-      if (decision === "買入")
-        return { action: "買入", color: "text-green-600" };
-      if (decision === "賣出") return { action: "賣出", color: "text-red-600" };
-      if (decision === "持有")
-        return { action: "持有", color: "text-yellow-600" };
-    }
-
-    // English patterns
-    if (lowerText.match(/(?:final|recommendation|decision)[:\s]*(buy|long)/i)) {
-      return { action: "買入", color: "text-green-600" };
-    }
-    if (
-      lowerText.match(/(?:final|recommendation|decision)[:\s]*(sell|short)/i)
-    ) {
-      return { action: "賣出", color: "text-red-600" };
-    }
-    if (lowerText.match(/(?:final|recommendation|decision)[:\s]*(hold)/i)) {
-      return { action: "持有", color: "text-yellow-600" };
-    }
-
-    return null;
-  };
-
-  // ====== PRIORITY 1: Trader's "最終交易提案" - HIGHEST PRIORITY ======
-  const traderReport = report.result.reports?.trader_investment_plan;
-  if (traderReport) {
-    const decision = findFinalProposal(traderReport);
-    if (decision) {
-      console.log(`📊 Found trader decision: ${decision.action}`);
-      return decision;
-    }
-  }
-
-  // ====== PRIORITY 2: Check final_trade_decision ======
-  const finalTradeDecision = report.result.reports?.final_trade_decision;
-  if (finalTradeDecision) {
-    const decision =
-      findFinalProposal(finalTradeDecision) ||
-      findOtherDecision(finalTradeDecision);
-    if (decision) return decision;
-  }
-
-  // ====== PRIORITY 3: Check risk_debate_state judge decision ======
-  const riskJudge = report.result.reports?.risk_debate_state?.judge_decision;
-  if (riskJudge) {
-    const decision = findOtherDecision(riskJudge);
-    if (decision) return decision;
-  }
-
-  // ====== PRIORITY 4: Fall back to decision.action field ======
-  if (report.result.decision?.action) {
-    const action = report.result.decision.action;
-    const actionLower = action.toLowerCase();
-    const color = actionLower.includes("buy")
-      ? "text-green-600"
-      : actionLower.includes("sell")
-        ? "text-red-600"
-        : "text-yellow-600";
-    return { action, color };
-  }
-
-  // ====== PRIORITY 5: Search in other report fields ======
-  const allReports = report.result.reports;
-  if (allReports) {
-    const reportTexts = [
-      allReports.market_report,
-      allReports.sentiment_report,
-      allReports.news_report,
-      allReports.fundamentals_report,
-    ].filter((t) => t && typeof t === "string");
-
-    for (const text of reportTexts) {
-      const decision = findFinalProposal(text);
-      if (decision) return decision;
-    }
-  }
-
-  return { action: "N/A", color: "text-gray-500" };
-};
+): { action: string; color: string } => extractDecisionFromResult(report.result);
 
 /**
  * Detect report language from content (for backward compatibility with old reports)

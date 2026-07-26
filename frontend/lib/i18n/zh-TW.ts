@@ -386,7 +386,48 @@ export const zhTW = {
     report: "報告",
     noReportGenerated: "此分析師沒有生成報告",
     notSelectedOrNoReport: "可能此分析師未被選擇或分析過程中未產生報告",
-    
+
+    // Verdict banner
+    verdict: {
+      label: "最終判斷",
+      noConfidence: "報告中沒有可解析的信心度數值",
+      confidence: "信心度",
+      analystCount: "分析師",
+      analystCountUnit: "位",
+      periodChange: "區間漲跌",
+      undecided: "無結論",
+    },
+
+    // On-page sections (single-page report layout)
+    sections: {
+      bullBearDebate: "多空辯論",
+      riskDebate: "風險辯論",
+      fullReport: "完整報告",
+      expand: "展開全文",
+      collapse: "收合",
+      empty: "未產生",
+    },
+
+    // Short role labels used on the debate cards
+    roles: {
+      bull: "多方研究員",
+      bear: "空方研究員",
+      aggressive: "激進派",
+      conservative: "保守派",
+      neutral: "中立派",
+    },
+
+    // Full-report section labels
+    reportSections: {
+      trader: "交易員結論",
+      riskDecision: "風險決策",
+      investmentPlan: "投資計畫",
+      technical: "技術面",
+      fundamental: "基本面",
+      news: "新聞",
+      social: "社群情緒",
+    },
+
     // Analyst tabs
     analysts: {
       market: "市場分析師",

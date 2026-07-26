@@ -2,48 +2,50 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { useAnalysisContext } from "@/context/AnalysisContext";
-import { useAuth } from "@/contexts/auth-context";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { PriceChart } from "@/components/analysis/PriceChart";
+import { VerdictBanner } from "@/components/analysis/VerdictBanner";
+import { DebateCard, type DebateTone } from "@/components/analysis/DebateCard";
+import { FullReport, type FullReportSection } from "@/components/analysis/FullReport";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ChevronLeft } from "lucide-react";
 import { lookupStockName, type MarketType } from "@/lib/stock-search";
+import {
+  extractConfidence,
+  extractDecisionFromResult,
+  extractLastDebateRound,
+  getModelDisplayName,
+} from "@/lib/report-utils";
 
-// Analyst keys for mapping to translation keys
-const ANALYST_KEYS = [
-  // === Analysts Team ===
-  { key: "market", reportKey: "market_report" },
-  { key: "social", reportKey: "sentiment_report" },
-  { key: "news", reportKey: "news_report" },
-  { key: "fundamentals", reportKey: "fundamentals_report" },
-  // === Research Team ===
-  { key: "bull", reportKey: "investment_debate_state.bull_history" },
-  { key: "bear", reportKey: "investment_debate_state.bear_history" },
-  { key: "research_manager", reportKey: "investment_debate_state.judge_decision" },
-  // === Trader ===
-  { key: "trader", reportKey: "trader_investment_plan" },
-  // === Risk Management Team ===
-  { key: "risky", reportKey: "risk_debate_state.risky_history" },
-  { key: "safe", reportKey: "risk_debate_state.safe_history" },
-  { key: "neutral", reportKey: "risk_debate_state.neutral_history" },
-  { key: "risk_manager", reportKey: "risk_debate_state.judge_decision" },
-];
+/** Read a dot-separated path out of the reports object. */
+const getNestedValue = (obj: unknown, path: string): unknown =>
+  path
+    .split(".")
+    .reduce<unknown>(
+      (current, key) =>
+        current && typeof current === "object"
+          ? (current as Record<string, unknown>)[key]
+          : undefined,
+      obj,
+    );
 
-// 獲取嵌套對象的值
-const getNestedValue = (obj: any, path: string) => {
-  return path.split('.').reduce((current, key) => current?.[key], obj);
-};
+/** Non-empty string, or null. Reports occasionally arrive as blank strings. */
+const asContent = (value: unknown): string | null =>
+  typeof value === "string" && value.trim().length > 0 ? value : null;
+
+/** The four analyst reports, used for the "N analysts" count in the banner. */
+const ANALYST_REPORT_KEYS = [
+  "market_report",
+  "sentiment_report",
+  "news_report",
+  "fundamentals_report",
+] as const;
 
 export default function AnalysisResultsPage() {
   const router = useRouter();
-  const { analysisResult, taskId, marketType } = useAnalysisContext();
+  const { analysisResult, marketType } = useAnalysisContext();
   const { t, locale } = useLanguage();
-  const [selectedAnalyst, setSelectedAnalyst] = useState("market");
   const [companyName, setCompanyName] = useState<string | null>(null);
 
   // Resolve the full company name for the analyzed ticker (localized).
@@ -67,37 +69,79 @@ export default function AnalysisResultsPage() {
     };
   }, [analysisResult?.ticker, analysisResult?.market_type, marketType, locale]);
 
-  // Debug: log received analysis data structure
-  useEffect(() => {
-    if (analysisResult) {
-      console.log("[Results] analysisResult.reports keys:", Object.keys(analysisResult.reports || {}));
-      const ids = analysisResult.reports?.investment_debate_state;
-      const rds = analysisResult.reports?.risk_debate_state;
-      if (ids) console.log("[Results] investment_debate_state keys:", Object.keys(ids));
-      if (rds) console.log("[Results] risk_debate_state keys:", Object.keys(rds));
-      // Log which reports are populated
-      ANALYST_KEYS.forEach(a => {
-        const val = getNestedValue(analysisResult.reports, a.reportKey);
-        console.log(`[Results] ${a.key} (${a.reportKey}):`, val ? "populated" : "EMPTY/MISSING");
-      });
-    }
-  }, [analysisResult]);
-
-  // Build analysts array with translations
-  const ANALYSTS = useMemo(() => ANALYST_KEYS.map(analyst => ({
-    key: analyst.key,
-    label: t.results.analysts[analyst.key as keyof typeof t.results.analysts] || analyst.key,
-    description: t.results.analysts[`${analyst.key}Desc` as keyof typeof t.results.analysts] || "",
-    reportKey: analyst.reportKey,
-  })), [t]);
-
-  // 如果沒有結果，重定向到分析頁面
+  // Redirect back to the form when there is nothing to show.
   useEffect(() => {
     if (!analysisResult) {
       router.push("/analysis");
     }
   }, [analysisResult, router]);
 
+  const reports = analysisResult?.reports;
+
+  const decision = useMemo(
+    () => extractDecisionFromResult(analysisResult),
+    [analysisResult],
+  );
+  const confidence = useMemo(
+    () => extractConfidence(analysisResult),
+    [analysisResult],
+  );
+  const analystCount = useMemo(
+    () => ANALYST_REPORT_KEYS.filter((key) => asContent(reports?.[key])).length,
+    [reports],
+  );
+
+  // Bull/bear and risk debates: every participant shown at once, side by side.
+  const researchDebate = useMemo(() => {
+    const entries: { tone: DebateTone; title: string; content: string }[] = [];
+    const add = (tone: DebateTone, title: string, path: string) => {
+      const content = asContent(getNestedValue(reports, path));
+      // Debate histories accumulate every round; only the last one is worth showing.
+      if (content) entries.push({ tone, title, content: extractLastDebateRound(content) });
+    };
+    add("bull", t.results.roles.bull, "investment_debate_state.bull_history");
+    add("bear", t.results.roles.bear, "investment_debate_state.bear_history");
+    return entries;
+  }, [reports, t]);
+
+  const riskDebate = useMemo(() => {
+    const entries: { tone: DebateTone; title: string; content: string }[] = [];
+    const add = (tone: DebateTone, title: string, path: string) => {
+      const content = asContent(getNestedValue(reports, path));
+      if (content) entries.push({ tone, title, content: extractLastDebateRound(content) });
+    };
+    add("aggressive", t.results.roles.aggressive, "risk_debate_state.risky_history");
+    add("conservative", t.results.roles.conservative, "risk_debate_state.safe_history");
+    add("neutral", t.results.roles.neutral, "risk_debate_state.neutral_history");
+    return entries;
+  }, [reports, t]);
+
+  // Long-form reports, stacked in one scrollable column with a jump-nav.
+  const fullReportSections = useMemo<FullReportSection[]>(() => {
+    const labels = t.results.reportSections;
+    const candidates: { id: string; label: string; path: string }[] = [
+      { id: "report-trader", label: labels.trader, path: "trader_investment_plan" },
+      {
+        id: "report-risk-decision",
+        label: labels.riskDecision,
+        path: "risk_debate_state.judge_decision",
+      },
+      {
+        id: "report-investment-plan",
+        label: labels.investmentPlan,
+        path: "investment_debate_state.judge_decision",
+      },
+      { id: "report-technical", label: labels.technical, path: "market_report" },
+      { id: "report-fundamental", label: labels.fundamental, path: "fundamentals_report" },
+      { id: "report-news", label: labels.news, path: "news_report" },
+      { id: "report-social", label: labels.social, path: "sentiment_report" },
+    ];
+
+    return candidates.flatMap(({ id, label, path }) => {
+      const content = asContent(getNestedValue(reports, path));
+      return content ? [{ id, label, content }] : [];
+    });
+  }, [reports, t]);
 
   if (!analysisResult) {
     return (
@@ -113,99 +157,119 @@ export default function AnalysisResultsPage() {
     );
   }
 
+  const marketLabels: Record<string, string> = {
+    us: `🇺🇸 ${t.form.usMarket}`,
+    twse: `🇹🇼 ${t.form.twseMarket}`,
+    tpex: `🇹🇼 ${t.form.tpexMarket}`,
+  };
+  const marketLabel =
+    marketLabels[(analysisResult.market_type ?? marketType ?? "us") as string] ?? null;
+
+  const models = [
+    getModelDisplayName(analysisResult.deep_think_llm),
+    getModelDisplayName(analysisResult.quick_think_llm),
+  ].filter(Boolean) as string[];
+
+  const hasDebates = researchDebate.length > 0 || riskDebate.length > 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-slate-50/20 to-blue-50/30 dark:from-gray-950 dark:via-blue-950/40 dark:to-gray-950">
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 animate-fade-in relative">
-          <div className="absolute inset-0 gradient-bg-radial opacity-30 -z-10 rounded-lg" />
-          <div>
-            <h1 className="text-4xl font-bold mb-2 gradient-text-primary">
-              {companyName ?? analysisResult.ticker} {t.results.detailedResults}
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              <span className="font-mono font-medium text-foreground/70">
-                {analysisResult.ticker}
-              </span>
-              {" · "}
-              {t.results.analysisDate}：{analysisResult.analysis_date}
-            </p>
-          </div>
-          <div className="flex gap-2 items-center flex-wrap">
-            <Button
-              variant="outline"
-              onClick={() => router.push("/analysis")}
-              className="gap-2 hover-lift"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              {t.results.backButton}
-            </Button>
-          </div>
-        </div>
-
-        {/* 分析師選擇 Tabs */}
-        <Tabs value={selectedAnalyst} onValueChange={setSelectedAnalyst} className="w-full animate-slide-up animate-delay-200">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-4 h-auto gap-2">
-            {ANALYSTS.map(analyst => (
-              <TabsTrigger 
-                key={analyst.key} 
-                value={analyst.key}
-                className="text-sm md:text-base py-2 transition-all duration-300 hover:scale-105"
-              >
-                {analyst.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-
-          {ANALYSTS.map(analyst => (
-            <TabsContent key={analyst.key} value={analyst.key} className="mt-6">
-              <div className="space-y-6">
-                {/* 價格圖表 - 每個分析師都有 */}
-                {analysisResult.price_data && analysisResult.price_stats && (
-                  <PriceChart
-                    priceData={analysisResult.price_data}
-                    priceStats={analysisResult.price_stats}
-                    ticker={analysisResult.ticker}
-                  />
+      <div className="container mx-auto px-4 py-8 md:py-12">
+        <div className="mx-auto max-w-7xl space-y-6 md:space-y-8">
+          {/* Header */}
+          <div className="relative flex flex-col gap-4 animate-fade-in md:flex-row md:items-center md:justify-between">
+            <div className="absolute inset-0 gradient-bg-radial opacity-30 -z-10 rounded-lg" />
+            <div className="min-w-0">
+              <h1 className="mb-2 text-3xl font-bold gradient-text-primary sm:text-4xl">
+                {companyName ?? analysisResult.ticker} {t.results.detailedResults}
+              </h1>
+              <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-600 dark:text-gray-400">
+                <span className="font-mono font-medium text-foreground/70">
+                  {analysisResult.ticker}
+                </span>
+                <span>·</span>
+                <span>
+                  {t.results.analysisDate}：{analysisResult.analysis_date}
+                </span>
+                {models.length > 0 && (
+                  <>
+                    <span>·</span>
+                    <span className="truncate">{models.join(" + ")}</span>
+                  </>
                 )}
+              </p>
+            </div>
+            <div className="flex shrink-0 flex-wrap items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={() => router.push("/analysis")}
+                className="gap-2 hover-lift"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                {t.results.backButton}
+              </Button>
+            </div>
+          </div>
 
-                {/* 分析師報告 */}
-                <Card className="animate-scale-up hover-lift">
-                  <CardHeader>
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                      <div>
-                        <CardTitle>{analyst.label} {t.results.report}</CardTitle>
-                        <CardDescription>
-                          {analyst.description}
-                        </CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    {getNestedValue(analysisResult.reports, analyst.reportKey) ? (
-                      <div className="prose prose-sm xl:prose-base max-w-none dark:prose-invert animate-fade-in overflow-x-auto prose-table:border-collapse prose-table:w-full prose-td:border prose-td:border-gray-300 dark:prose-td:border-gray-600 prose-td:p-2 prose-th:border prose-th:border-gray-300 dark:prose-th:border-gray-600 prose-th:p-2 prose-th:bg-gray-100 dark:prose-th:bg-gray-800">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {getNestedValue(analysisResult.reports, analyst.reportKey)}
-                        </ReactMarkdown>
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <p className="text-gray-500 dark:text-gray-400">
-                          {t.results.noReportGenerated}
-                        </p>
-                        <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
-                          {t.results.notSelectedOrNoReport}
-                        </p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+          {/* Final call */}
+          <VerdictBanner
+            action={decision.action}
+            signal={decision.signal}
+            confidence={confidence}
+            analystCount={analystCount}
+            periodChange={analysisResult.price_stats?.growth_rate ?? null}
+            marketLabel={marketLabel}
+          />
+
+          {/* Price chart — shown once, instead of repeated per analyst */}
+          {analysisResult.price_data && analysisResult.price_stats && (
+            <PriceChart
+              priceData={analysisResult.price_data}
+              priceStats={analysisResult.price_stats}
+              ticker={analysisResult.ticker}
+            />
+          )}
+
+          {/* Debates: all participants visible at the same time */}
+          {researchDebate.length > 0 && (
+            <section className="space-y-3">
+              <h2 className="text-sm font-medium text-muted-foreground">
+                {t.results.sections.bullBearDebate}
+              </h2>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {researchDebate.map((entry) => (
+                  <DebateCard key={entry.tone} {...entry} />
+                ))}
               </div>
-            </TabsContent>
-          ))}
-        </Tabs>
+            </section>
+          )}
+
+          {riskDebate.length > 0 && (
+            <section className="space-y-3">
+              <h2 className="text-sm font-medium text-muted-foreground">
+                {t.results.sections.riskDebate}
+              </h2>
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                {riskDebate.map((entry) => (
+                  <DebateCard key={entry.tone} {...entry} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Long-form reports, stacked on the same page */}
+          <FullReport sections={fullReportSections} />
+
+          {!hasDebates && fullReportSections.length === 0 && (
+            <div className="rounded-2xl border border-border bg-card py-12 text-center">
+              <p className="text-gray-500 dark:text-gray-400">
+                {t.results.noReportGenerated}
+              </p>
+              <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
+                {t.results.notSelectedOrNoReport}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
