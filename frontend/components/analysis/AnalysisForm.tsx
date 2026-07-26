@@ -566,10 +566,10 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
                               <span>Claude Fable 5</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="claude-opus-4-8">
+                          <SelectItem value="claude-opus-5">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/claude-color.svg" alt="Claude" width={16} height={16} className="shrink-0" />
-                              <span>Claude Opus 4.8</span>
+                              <span>Claude Opus 5</span>
                             </div>
                           </SelectItem>
                           <SelectItem value="claude-sonnet-5">
@@ -741,10 +741,10 @@ export function AnalysisForm({ onSubmit, loading = false }: AnalysisFormProps) {
                               <span>Claude Fable 5</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="claude-opus-4-8">
+                          <SelectItem value="claude-opus-5">
                             <div className="flex items-center gap-2">
                               <Image src="/logos/claude-color.svg" alt="Claude" width={16} height={16} className="shrink-0" />
-                              <span>Claude Opus 4.8</span>
+                              <span>Claude Opus 5</span>
                             </div>
                           </SelectItem>
                           <SelectItem value="claude-sonnet-5">

@@ -39,3 +39,18 @@ def get_google_news(
         return ""
 
     return f"## {query} Google 新聞，從 {before} 到 {curr_date}：\n\n{news_str}"
+
+
+def get_global_news_google(
+    curr_date: Annotated[str, "當前日期，格式為 yyyy-mm-dd"],
+    look_back_days: Annotated[int, "回溯天數"] = 7,
+    limit: Annotated[int, "返回的最大文章數（此實作未使用，僅為供應商路由簽名一致）"] = 5,
+) -> str:
+    """
+    全球宏觀 / 市場新聞（透過 Google News，免 API 金鑰）。
+
+    get_global_news 供應商鏈原本只有 openai（需 OpenAI web search）與 finmind（台股），
+    對使用非 OpenAI 供應商的使用者不可用。本函式以固定的總經查詢字串取代個股查詢，
+    讓任何人都有一個免金鑰的全球新聞來源。
+    """
+    return get_google_news("stock market economy finance macro", curr_date, look_back_days)

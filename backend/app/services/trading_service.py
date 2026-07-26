@@ -64,7 +64,7 @@ class TradingService:
         analysts: Optional[List[str]] = None,
         research_depth: int = 1,
         deep_think_llm: str = "claude-sonnet-5",
-        quick_think_llm: str = "claude-opus-4-8",
+        quick_think_llm: str = "claude-opus-5",
         language: str = "zh-TW",  # Language for agent reports: 'en' or 'zh-TW'
     ) -> Dict[str, Any]:
         """
@@ -398,7 +398,7 @@ class TradingService:
             "gpt-5.6-luna",
             # Anthropic (Official model IDs)
             "claude-fable-5",
-            "claude-opus-4-8",
+            "claude-opus-5",
             "claude-sonnet-5",
             "claude-haiku-4-5-20251001",
             # Google

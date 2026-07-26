@@ -119,7 +119,7 @@ def get_pdf_label(key: str, language: str = 'zh-TW') -> str:
 _MODEL_DISPLAY_NAMES: dict[str, str] = {
     # Anthropic Claude
     "claude-fable-5": "Claude Fable 5",
-    "claude-opus-4-8": "Claude Opus 4.8",
+    "claude-opus-5": "Claude Opus 5",
     "claude-sonnet-5": "Claude Sonnet 5",
     "claude-haiku-4-5-20251001": "Claude Haiku 4.5",
     

@@ -37,20 +37,23 @@ class FinancialSituationMemory:
         self.situation_collection = self.chroma_client.get_or_create_collection(name=name)
 
     def _init_local_embedding(self, config):
-        """Initialize local embedding using sentence-transformers."""
+        """Initialize local embedding without any API key.
+
+        優先用 sentence-transformers（品質較好，但需要 torch）。若環境沒有 torch
+        （例如精簡打包的桌面版），自動退回 ChromaDB 內建的 ONNX MiniLM 嵌入 ——
+        不需 torch、不需 API 金鑰，首次使用會下載約 80MB 的 onnx 模型後即可離線運作。
+        """
         try:
             from sentence_transformers import SentenceTransformer
         except ImportError:
-            raise ImportError(
-                "sentence-transformers is required for local embeddings. "
-                "Install it with: pip install sentence-transformers"
-            )
-        
+            self._init_onnx_local_embedding()
+            return
+
         # Default to all-mpnet-base-v2 - higher-quality general-purpose embeddings
         model_name = config.get("embedding_model", "all-mpnet-base-v2")
-        
+
         import logging
-        
+
         # Reuse cached model if already loaded (avoids loading 5 copies and OOM)
         if model_name not in FinancialSituationMemory._model_cache:
             logging.info(f"Loading local embedding model: {model_name}")
@@ -58,9 +61,27 @@ class FinancialSituationMemory:
             logging.info(f"Local embedding model loaded successfully.")
         else:
             logging.info(f"Reusing cached embedding model: {model_name}")
-        
+
+        self.local_backend = "sentence-transformers"
         self.model = FinancialSituationMemory._model_cache[model_name]
         self.embedding_dim = self.model.get_sentence_embedding_dimension()
+
+    def _init_onnx_local_embedding(self):
+        """torch-free 本地嵌入：使用 ChromaDB 內建的 ONNX all-MiniLM-L6-v2。"""
+        import logging
+        from chromadb.utils import embedding_functions
+
+        cache_key = "__chroma_onnx_default__"
+        if cache_key not in FinancialSituationMemory._model_cache:
+            logging.info(
+                "sentence-transformers 不可用，改用 ChromaDB 內建 ONNX 嵌入（無需 torch / API 金鑰）"
+            )
+            FinancialSituationMemory._model_cache[cache_key] = (
+                embedding_functions.DefaultEmbeddingFunction()
+            )
+        self.local_backend = "onnx"
+        self._onnx_ef = FinancialSituationMemory._model_cache[cache_key]
+        self.embedding_dim = 384  # all-MiniLM-L6-v2
 
     def _init_openai_embedding(self, config):
         """Initialize OpenAI embedding client."""
@@ -106,7 +127,12 @@ class FinancialSituationMemory:
             return self._get_openai_embedding(text)
 
     def _get_local_embedding(self, text):
-        """Get embedding using local sentence-transformers model."""
+        """Get embedding using the local backend (sentence-transformers 或 ONNX)."""
+        if getattr(self, "local_backend", "sentence-transformers") == "onnx":
+            # ChromaDB embedding function 接受字串列表，回傳對應的向量列表
+            result = self._onnx_ef([text])
+            vec = result[0]
+            return vec.tolist() if hasattr(vec, "tolist") else list(vec)
         embedding = self.model.encode(text, normalize_embeddings=True)
         return embedding.tolist()
 

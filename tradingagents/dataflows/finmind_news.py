@@ -175,18 +175,20 @@ def get_news(
 
 def get_global_news(
     curr_date: str,
-    look_back_days: int = 7
+    look_back_days: int = 7,
+    limit: int = 5,
 ) -> str:
     """
     獲取台灣股市整體市場新聞/動態。
-    
+
     注意：FinMind 不提供全球新聞 API，
     本函式透過市場整體指標提供替代資訊。
-    
+
     Args:
         curr_date: 當前日期
         look_back_days: 回溯天數
-        
+        limit: 返回的最大文章數（為與供應商路由簽名一致而保留，此實作未使用）
+
     Returns:
         str: JSON 格式的市場動態
     """

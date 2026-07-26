@@ -3,7 +3,7 @@ from typing import Annotated
 # 從特定供應商的模組匯入
 from .local import get_YFin_data, get_finnhub_news, get_finnhub_company_insider_sentiment, get_finnhub_company_insider_transactions, get_simfin_balance_sheet, get_simfin_cashflow, get_simfin_income_statements, get_reddit_global_news, get_reddit_company_news
 from .y_finance import get_YFin_data_online, get_stock_stats_indicators_window, get_balance_sheet as get_yfinance_balance_sheet, get_cashflow as get_yfinance_cashflow, get_income_statement as get_yfinance_income_statement, get_insider_transactions as get_yfinance_insider_transactions, get_fundamentals as get_yfinance_fundamentals
-from .google import get_google_news
+from .google import get_google_news, get_global_news_google
 from .openai import get_stock_news_openai, get_global_news_openai, get_fundamentals_openai
 from .alpha_vantage import (
     get_stock as get_alpha_vantage_stock,
@@ -13,7 +13,8 @@ from .alpha_vantage import (
     get_cashflow as get_alpha_vantage_cashflow,
     get_income_statement as get_alpha_vantage_income_statement,
     get_insider_transactions as get_alpha_vantage_insider_transactions,
-    get_news as get_alpha_vantage_news
+    get_news as get_alpha_vantage_news,
+    get_global_news as get_alpha_vantage_global_news,
 )
 from .alpha_vantage_common import AlphaVantageRateLimitError
 
@@ -129,9 +130,11 @@ VENDOR_METHODS = {
     },
     "get_global_news": {
         "openai": get_global_news_openai,
+        "alpha_vantage": get_alpha_vantage_global_news,  # 依 topics 的全球新聞（用既有 AV 金鑰）
+        "google": get_global_news_google,  # 免金鑰的全球新聞備援（適用非 OpenAI 供應商）
         # 已移除 "local": get_reddit_global_news —
         # 它依賴本地 Reddit 資料目錄（部署環境不存在），每次都回空結果卻仍「成功」，
-        # 導致備援鏈提早停止、全球新聞實質關閉。移除後改由 openai / finmind 提供。
+        # 導致備援鏈提早停止、全球新聞實質關閉。移除後改由 openai / google / finmind 提供。
         "finmind": get_finmind_global_news,  # 台股市場動態
     },
     "get_insider_sentiment": {

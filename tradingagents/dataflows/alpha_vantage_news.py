@@ -94,6 +94,64 @@ def get_news(ticker, start_date, end_date, use_toon: bool = True) -> dict[str, s
         print(f"警告：無法總結新聞數據：{e}")
         return response
 
+def get_global_news(curr_date, look_back_days: int = 7, limit: int = 5, use_toon: bool = True) -> dict[str, str] | str:
+    """
+    全球宏觀 / 市場新聞（Alpha Vantage NEWS_SENTIMENT，依 topics 而非個股）。
+
+    讓 get_global_news 供應商鏈多一個實用來源：使用非 OpenAI 供應商（無 web search）、
+    但有 Alpha Vantage 金鑰的使用者，也能取得全球新聞，不必依賴 finmind（台股）。
+
+    Args:
+        curr_date: 當前日期，格式 yyyy-mm-dd
+        look_back_days: 回溯天數（預設 7）
+        limit: 返回的最大文章數（預設 5）
+        use_toon: 是否使用 toon 格式（預設 True）
+    """
+    from datetime import datetime, timedelta
+
+    end_dt = datetime.strptime(curr_date, "%Y-%m-%d")
+    start_dt = end_dt - timedelta(days=int(look_back_days))
+
+    params = {
+        "topics": "economy_macro,financial_markets,finance,economy_monetary",
+        "time_from": format_datetime_for_api(start_dt.strftime("%Y-%m-%d")),
+        "time_to": format_datetime_for_api(end_dt.strftime("%Y-%m-%d")),
+        "sort": "LATEST",
+        "limit": str(max(1, min(int(limit) or 5, 50))),
+    }
+
+    response = _make_api_request("NEWS_SENTIMENT", params)
+
+    try:
+        data = json.loads(response) if isinstance(response, str) else response
+        if isinstance(data, dict) and "feed" in data:
+            feed = [
+                {
+                    "title": item.get("title", ""),
+                    "url": item.get("url", ""),
+                    "time_published": item.get("time_published", ""),
+                    "summary": (item.get("summary", "") or "")[:200],
+                    "source": item.get("source", ""),
+                    "overall_sentiment_score": item.get("overall_sentiment_score", 0),
+                    "overall_sentiment_label": item.get("overall_sentiment_label", ""),
+                }
+                for item in data.get("feed", [])
+            ]
+            summarized = {"items": str(len(feed)), "feed": feed}
+            if use_toon:
+                try:
+                    from tradingagents.utils.toon_converter import convert_json_to_toon
+                    return convert_json_to_toon(summarized)
+                except Exception as e:
+                    print(f"警告：toon轉換失敗：{e}，使用JSON格式")
+                    return json.dumps(summarized, ensure_ascii=False, indent=2)
+            return json.dumps(summarized, ensure_ascii=False, indent=2)
+        return response
+    except (json.JSONDecodeError, Exception) as e:
+        print(f"警告：無法總結全球新聞數據：{e}")
+        return response
+
+
 def get_insider_transactions(symbol: str, use_toon: bool = True) -> dict[str, str] | str:
     """
     返回主要利益相關者的最新和歷史內部交易。
