@@ -91,28 +91,46 @@ export default function AnalysisResultsPage() {
     [reports],
   );
 
-  // Bull/bear and risk debates: every participant shown at once, side by side.
+  // Bull/bear and risk debates: every participant shown at once, side by side,
+  // with the manager's verdict as the last column of the row it arbitrates.
   const researchDebate = useMemo(() => {
     const entries: { tone: DebateTone; title: string; content: string }[] = [];
-    const add = (tone: DebateTone, title: string, path: string) => {
+    const add = (tone: DebateTone, title: string, path: string, isHistory = true) => {
       const content = asContent(getNestedValue(reports, path));
       // Debate histories accumulate every round; only the last one is worth showing.
-      if (content) entries.push({ tone, title, content: extractLastDebateRound(content) });
+      // Judge decisions are written once, so they are used as-is.
+      if (content) {
+        entries.push({ tone, title, content: isHistory ? extractLastDebateRound(content) : content });
+      }
     };
     add("bull", t.results.roles.bull, "investment_debate_state.bull_history");
     add("bear", t.results.roles.bear, "investment_debate_state.bear_history");
+    add(
+      "investmentPlan",
+      t.results.reportSections.investmentPlan,
+      "investment_debate_state.judge_decision",
+      false,
+    );
     return entries;
   }, [reports, t]);
 
   const riskDebate = useMemo(() => {
     const entries: { tone: DebateTone; title: string; content: string }[] = [];
-    const add = (tone: DebateTone, title: string, path: string) => {
+    const add = (tone: DebateTone, title: string, path: string, isHistory = true) => {
       const content = asContent(getNestedValue(reports, path));
-      if (content) entries.push({ tone, title, content: extractLastDebateRound(content) });
+      if (content) {
+        entries.push({ tone, title, content: isHistory ? extractLastDebateRound(content) : content });
+      }
     };
     add("aggressive", t.results.roles.aggressive, "risk_debate_state.risky_history");
     add("conservative", t.results.roles.conservative, "risk_debate_state.safe_history");
     add("neutral", t.results.roles.neutral, "risk_debate_state.neutral_history");
+    add(
+      "riskDecision",
+      t.results.reportSections.riskDecision,
+      "risk_debate_state.judge_decision",
+      false,
+    );
     return entries;
   }, [reports, t]);
 
@@ -120,21 +138,11 @@ export default function AnalysisResultsPage() {
   const fullReportSections = useMemo<FullReportSection[]>(() => {
     const labels = t.results.reportSections;
     const candidates: { id: string; label: string; path: string }[] = [
-      { id: "report-trader", label: labels.trader, path: "trader_investment_plan" },
-      {
-        id: "report-risk-decision",
-        label: labels.riskDecision,
-        path: "risk_debate_state.judge_decision",
-      },
-      {
-        id: "report-investment-plan",
-        label: labels.investmentPlan,
-        path: "investment_debate_state.judge_decision",
-      },
-      { id: "report-technical", label: labels.technical, path: "market_report" },
       { id: "report-fundamental", label: labels.fundamental, path: "fundamentals_report" },
+      { id: "report-technical", label: labels.technical, path: "market_report" },
       { id: "report-news", label: labels.news, path: "news_report" },
       { id: "report-social", label: labels.social, path: "sentiment_report" },
+      { id: "report-trader", label: labels.trader, path: "trader_investment_plan" },
     ];
 
     return candidates.flatMap(({ id, label, path }) => {
@@ -236,7 +244,7 @@ export default function AnalysisResultsPage() {
               <h2 className="text-sm font-medium text-muted-foreground">
                 {t.results.sections.bullBearDebate}
               </h2>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {researchDebate.map((entry) => (
                   <DebateCard key={entry.tone} {...entry} />
                 ))}
@@ -249,7 +257,7 @@ export default function AnalysisResultsPage() {
               <h2 className="text-sm font-medium text-muted-foreground">
                 {t.results.sections.riskDebate}
               </h2>
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
                 {riskDebate.map((entry) => (
                   <DebateCard key={entry.tone} {...entry} />
                 ))}

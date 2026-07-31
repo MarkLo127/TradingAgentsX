@@ -12,6 +12,8 @@ import {
   Zap,
   Shield,
   Scale,
+  Gavel,
+  ClipboardCheck,
   ChevronDown,
   type LucideIcon,
 } from "lucide-react";
@@ -19,7 +21,15 @@ import { MarkdownReport } from "@/components/analysis/MarkdownReport";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
-export type DebateTone = "bull" | "bear" | "aggressive" | "conservative" | "neutral";
+export type DebateTone =
+  | "bull"
+  | "bear"
+  | "aggressive"
+  | "conservative"
+  | "neutral"
+  // The manager verdicts, shown alongside the debaters they arbitrate.
+  | "investmentPlan"
+  | "riskDecision";
 
 interface DebateCardProps {
   tone: DebateTone;
@@ -60,6 +70,18 @@ const TONE_THEME: Record<
     header: "bg-blue-50/80 dark:bg-blue-950/30",
     label: "text-blue-700 dark:text-blue-400",
     ring: "border-blue-200/80 dark:border-blue-900/60",
+  },
+  investmentPlan: {
+    icon: ClipboardCheck,
+    header: "bg-violet-50/80 dark:bg-violet-950/30",
+    label: "text-violet-700 dark:text-violet-400",
+    ring: "border-violet-200/80 dark:border-violet-900/60",
+  },
+  riskDecision: {
+    icon: Gavel,
+    header: "bg-amber-50/80 dark:bg-amber-950/30",
+    label: "text-amber-700 dark:text-amber-400",
+    ring: "border-amber-200/80 dark:border-amber-900/60",
   },
 };
 
